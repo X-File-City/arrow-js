@@ -1076,7 +1076,7 @@ function initChunk(
 ): PartialChunk {
   const tpl = document.createElement('template')
   tpl.innerHTML = html
-  tpl.content.normalize()
+  if (hasExpressions) tpl.content.normalize()
   return (chunkMemo[id ?? html] = {
     dom: tpl.content,
     paths: hasExpressions ? createPaths(tpl.content) : [],
