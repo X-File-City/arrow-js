@@ -10,6 +10,9 @@ export default defineConfig({
   server: {
     host: '127.0.0.1',
     port: 4174,
+    fs: {
+      allow: [rootDir, path.resolve(rootDir, '..')],
+    },
   },
   build: {
     outDir: path.resolve(rootDir, 'dist/client'),

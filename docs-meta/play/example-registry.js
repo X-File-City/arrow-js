@@ -1,0 +1,1 @@
+../../docs/play/example-registry.js

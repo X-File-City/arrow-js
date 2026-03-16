@@ -42,6 +42,30 @@ html {
 }
 
 /* ---------------------------------------------------------------------------
+   Theme toggle (shared between header and playground)
+   --------------------------------------------------------------------------- */
+.theme-toggle-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.theme-toggle-sun {
+  display: none;
+}
+
+.theme-toggle-moon {
+  display: block;
+}
+
+[data-theme="dark"] .theme-toggle-sun {
+  display: block;
+}
+
+[data-theme="dark"] .theme-toggle-moon {
+  display: none;
+}
+
+/* ---------------------------------------------------------------------------
    Hero grid-paper background
    --------------------------------------------------------------------------- */
 .hero-grid {

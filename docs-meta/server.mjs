@@ -11,6 +11,22 @@ const port = Number(process.env.PORT ?? 4174)
 const templatePath = path.resolve(__dirname, 'index.html')
 const clientDistPath = path.resolve(__dirname, 'dist/client')
 const serverEntryPath = path.resolve(__dirname, 'dist/server/entry-server.js')
+const playgroundRuntimePath = path.resolve(
+  __dirname,
+  '../packages/core/dist/index.mjs'
+)
+
+const htmlEntryRedirects = new Map([
+  ['/play', '/play/'],
+  ['/play/preview', '/play/preview.html'],
+  ['/play/preview/', '/play/preview.html'],
+])
+
+const devHtmlEntries = new Map([
+  ['/play/', path.resolve(__dirname, 'play/index.html')],
+  ['/play/index.html', path.resolve(__dirname, 'play/index.html')],
+  ['/play/preview.html', path.resolve(__dirname, 'play/preview.html')],
+])
 
 let vite = null
 
@@ -18,6 +34,14 @@ const server = http.createServer(async (request, response) => {
   const url = request.url ?? '/'
 
   try {
+    const redirectTarget = redirectHtmlEntryUrl(request)
+
+    if (redirectTarget) {
+      response.writeHead(302, { Location: redirectTarget })
+      response.end()
+      return
+    }
+
     if (vite) {
       await new Promise((resolve, reject) => {
         vite.middlewares(request, response, (error) => {
@@ -29,6 +53,19 @@ const server = http.createServer(async (request, response) => {
       if (response.writableEnded || response.headersSent) {
         return
       }
+    }
+
+    const devHtmlEntry = !isProduction ? resolveDevHtmlEntry(url) : null
+
+    if (devHtmlEntry) {
+      const template = await fs.readFile(devHtmlEntry.filePath, 'utf8')
+      const html = await vite.transformIndexHtml(devHtmlEntry.url, template)
+
+      response.writeHead(200, {
+        'Content-Type': 'text/html',
+      })
+      response.end(html)
+      return
     }
 
     const staticFile = await resolveStaticFile(url)
@@ -97,7 +134,11 @@ server.listen(port, '127.0.0.1', () => {
 async function resolveStaticFile(url) {
   const pathname = new URL(url, 'http://arrow.local').pathname
 
-  if (pathname === '/') {
+  if (pathname === '/play/arrow-runtime.js') {
+    return playgroundRuntimePath
+  }
+
+  if (pathname === '/' || pathname === '/play/' || pathname === '/play/index.html') {
     return null
   }
 
@@ -128,6 +169,7 @@ async function serveStaticAsset(filePath, response) {
 function contentTypeFor(filePath) {
   if (filePath.endsWith('.css')) return 'text/css'
   if (filePath.endsWith('.js')) return 'application/javascript'
+  if (filePath.endsWith('.mjs')) return 'application/javascript'
   if (filePath.endsWith('.html')) return 'text/html'
   if (filePath.endsWith('.svg')) return 'image/svg+xml'
   if (filePath.endsWith('.png')) return 'image/png'
@@ -158,4 +200,33 @@ function isDocumentRequest(request) {
 
   const accept = request.headers.accept ?? ''
   return !accept || accept.includes('text/html') || accept.includes('*/*')
+}
+
+function redirectHtmlEntryUrl(request) {
+  if (!isDocumentRequest(request)) {
+    return null
+  }
+
+  const target = new URL(request.url ?? '/', 'http://arrow.local')
+  const redirectPath = htmlEntryRedirects.get(target.pathname)
+
+  if (!redirectPath) {
+    return null
+  }
+
+  return `${redirectPath}${target.search}`
+}
+
+function resolveDevHtmlEntry(url) {
+  const target = new URL(url, 'http://arrow.local')
+  const filePath = devHtmlEntries.get(target.pathname)
+
+  if (!filePath) {
+    return null
+  }
+
+  return {
+    filePath,
+    url: `${target.pathname}${target.search}`,
+  }
 }
