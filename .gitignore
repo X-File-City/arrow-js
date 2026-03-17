@@ -6,3 +6,4 @@ coverage
 public
 .cache
 .play-store.json
+.dmux/
