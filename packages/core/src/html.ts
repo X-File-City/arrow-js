@@ -96,7 +96,7 @@ export interface Chunk {
   bkp?: Chunk
   bkn?: Chunk
   bp?: StaleBucket
-  v?: Array<[Element, string, EventListener]> | null
+  v?: Array<[Element, string]> | null
   u?: Array<() => void> | null
   s?: ReturnType<typeof createPropsProxy>[1]
   mk?: number
@@ -113,6 +113,17 @@ interface ChunkProto {
 interface DOMRef {
   f: ChildNode | null
   l: ChildNode | null
+}
+
+const eventBindingsKey = Symbol('arrowEventBindings')
+
+interface EventBindingMeta {
+  c: Chunk
+  p: number
+}
+
+interface EventBoundElement extends Element {
+  [eventBindingsKey]?: Record<string, EventBindingMeta | undefined>
 }
 
 type Rendered = Chunk | Text
@@ -376,12 +387,30 @@ function trimStaleChunks() {
   }
 }
 
+function dispatchChunkEvent(this: Element, evt: Event) {
+  const binding = (this as EventBoundElement)[eventBindingsKey]?.[evt.type]
+  if (!binding) return
+  const chunk = binding.c
+  if (chunk.st || !(chunk._t as InternalTemplate)._m) return
+  ;(expressionPool[binding.p] as CallableFunction | undefined)?.(evt)
+}
+
 function detachChunkEvents(chunk: Chunk) {
   const events = chunk.v
   if (!events) return
   for (let i = 0; i < events.length; i++) {
-    const [target, event, listener] = events[i]
-    target.removeEventListener(event, listener)
+    const [target, event] = events[i]
+    const bindings = (target as EventBoundElement)[eventBindingsKey]
+    if (bindings) {
+      delete bindings[event]
+      let hasBindings = false
+      for (const key in bindings) {
+        hasBindings = true
+        break
+      }
+      if (!hasBindings) delete (target as EventBoundElement)[eventBindingsKey]
+    }
+    target.removeEventListener(event, dispatchChunkEvent)
   }
 }
 
@@ -580,22 +609,33 @@ function createAttrBinding(
 
   if (attrName[0] === '@') {
     const event = attrName.slice(1)
-    const listener = (evt: Event) => {
-      if (parentChunk.st || !(parentChunk._t as InternalTemplate)._m) return
-      ;(expressionPool[expressionPointer] as CallableFunction)?.(evt)
-    }
-    const record: [Element, string, EventListener] = [target, event, listener]
-    target.addEventListener(event, listener)
+    const bindings = ((target as EventBoundElement)[eventBindingsKey] ??= {})
+    bindings[event] = { c: parentChunk, p: expressionPointer }
+    const record: [Element, string] = [target, event]
+    target.addEventListener(event, dispatchChunkEvent)
     target.removeAttribute(attrName)
     ;(parentChunk.v ??= []).push(record)
     if (capture) {
       registerHydrationHook(parentChunk, (map) => {
         const adopted = map.get(target)
         if (!adopted) return
-        target.removeEventListener(event, listener)
+        const previousTarget = target as EventBoundElement
+        const previousBindings = previousTarget[eventBindingsKey]
+        if (previousBindings) {
+          delete previousBindings[event]
+          let hasBindings = false
+          for (const key in previousBindings) {
+            hasBindings = true
+            break
+          }
+          if (!hasBindings) delete previousTarget[eventBindingsKey]
+        }
+        target.removeEventListener(event, dispatchChunkEvent)
         target = adopted as Element
         record[0] = target
-        target.addEventListener(event, listener)
+        const nextBindings = ((target as EventBoundElement)[eventBindingsKey] ??= {})
+        nextBindings[event] = { c: parentChunk, p: expressionPointer }
+        target.addEventListener(event, dispatchChunkEvent)
         target.removeAttribute(attrName)
       })
     }
