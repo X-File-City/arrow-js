@@ -4,6 +4,7 @@ import {
   playgroundExampleHref,
   starterExampleId,
 } from '../../../play/example-meta.js'
+import { CliCommand } from '../../components/CliCommand'
 
 /**
  * All docs content sections. Each is a plain function — no local state needed
@@ -56,21 +57,22 @@ export function Quickstart() {
       </h2>
       <div class="space-y-4 text-zinc-600 dark:text-zinc-400 leading-relaxed">
         <p>
-          The fastest way into a full Arrow app right now is a Vite 8 project
-          with the SSR and hydration packages installed next to core.
-        </p>
-        <p>
-          These examples use TypeScript and the Vite
-          <code>vanilla-ts</code> starter. Arrow's packages ship type
-          information, so you can keep the same native-JavaScript model while
-          still getting checked props and editor help.
+          Run a single command to add Arrow to your project — or scaffold a
+          complete Arrow project with SSR, hydration, and all packages
+          configured:
         </p>
 
-        <h3
-          class="text-lg font-semibold text-zinc-900 dark:text-white pt-4"
-        >
-          Install
+        ${CliCommand()}
+
+        <h3 class="text-lg font-semibold text-zinc-900 dark:text-white pt-6">
+          Manual setup
         </h3>
+        <p>
+          Prefer to wire things up yourself? Start with a Vite 8 project and add
+          the Arrow packages. These examples use TypeScript and the Vite
+          <code>vanilla-ts</code> starter.
+        </p>
+
         <div class="code-block">
           <pre><code class="language-shell">pnpm create vite@latest arrow-app --template vanilla-ts
 cd arrow-app
@@ -78,9 +80,7 @@ pnpm add @arrow-js/core @arrow-js/framework @arrow-js/ssr @arrow-js/hydrate
 pnpm add -D vite@8</code></pre>
         </div>
 
-        <h3
-          class="text-lg font-semibold text-zinc-900 dark:text-white pt-4"
-        >
+        <h3 class="text-lg font-semibold text-zinc-900 dark:text-white pt-4">
           <code>src/App.ts</code>
         </h3>
         <div class="code-block">
@@ -103,9 +103,7 @@ export function createApp() {
 }</code></pre>
         </div>
 
-        <h3
-          class="text-lg font-semibold text-zinc-900 dark:text-white pt-4"
-        >
+        <h3 class="text-lg font-semibold text-zinc-900 dark:text-white pt-4">
           <code>src/entry-server.ts</code>
         </h3>
         <div class="code-block">
@@ -122,9 +120,7 @@ export async function renderPage() {
           On the client, read the serialized payload and hydrate the same view:
         </p>
 
-        <h3
-          class="text-lg font-semibold text-zinc-900 dark:text-white pt-4"
-        >
+        <h3 class="text-lg font-semibold text-zinc-900 dark:text-white pt-4">
           <code>src/entry-client.ts</code>
         </h3>
         <div class="code-block">
@@ -143,9 +139,7 @@ await hydrate(root, createApp(), readPayload())</code></pre>
           replacing it.
         </p>
 
-        <h3
-          class="text-lg font-semibold text-zinc-900 dark:text-white pt-6"
-        >
+        <h3 class="text-lg font-semibold text-zinc-900 dark:text-white pt-6">
           Other ways to install
         </h3>
         <p>
@@ -169,9 +163,7 @@ await hydrate(root, createApp(), readPayload())</code></pre>
 &lt;/script&gt;</code></pre>
         </div>
 
-        <h3
-          class="text-lg font-semibold text-zinc-900 dark:text-white pt-4"
-        >
+        <h3 class="text-lg font-semibold text-zinc-900 dark:text-white pt-4">
           Editor support
         </h3>
         <p>
@@ -271,9 +263,7 @@ html\`\${Counter(pick(state, 'count'))}\`</code></pre>
           </p>
         </div>
 
-        <h3
-          class="text-lg font-semibold text-zinc-900 dark:text-white pt-4"
-        >
+        <h3 class="text-lg font-semibold text-zinc-900 dark:text-white pt-4">
           Async components
         </h3>
         <p>
@@ -300,8 +290,8 @@ const UserCard = component((props: { id: string }) =&gt;
         <p>
           The async body resolves data, and the surrounding template stays
           reactive in the usual Arrow way. SSR waits for async components to
-          settle, and hydration resumes JSON-safe results from serialized payload
-          data automatically.
+          settle, and hydration resumes JSON-safe results from serialized
+          payload data automatically.
         </p>
 
         <div class="callout callout-tip">
@@ -359,9 +349,7 @@ const data = reactive({
 console.log(data.price) // 25</code></pre>
         </div>
 
-        <h3
-          class="text-lg font-semibold text-zinc-900 dark:text-white pt-4"
-        >
+        <h3 class="text-lg font-semibold text-zinc-900 dark:text-white pt-4">
           Computed values
         </h3>
         <p>
@@ -459,9 +447,7 @@ export function Templates() {
         <code class="text-lg ml-2">t</code>
       </h2>
       <div class="space-y-4 text-zinc-600 dark:text-zinc-400 leading-relaxed">
-        <p>
-          <code>html\`...\`</code> &mdash; create a mountable template
-        </p>
+        <p><code>html\`...\`</code> &mdash; create a mountable template</p>
         <ul class="list-disc pl-6 space-y-2">
           <li>
             Templates can be mounted directly, passed around, or returned from
@@ -479,9 +465,7 @@ export function Templates() {
 
         <p>Static expressions render once. Function expressions stay live.</p>
 
-        <h3
-          class="text-lg font-semibold text-zinc-900 dark:text-white pt-4"
-        >
+        <h3 class="text-lg font-semibold text-zinc-900 dark:text-white pt-4">
           Attributes
         </h3>
         <p>Use a function expression to keep an attribute in sync.</p>
@@ -493,18 +477,12 @@ export function Templates() {
           </p>
         </div>
 
-        <h3
-          class="text-lg font-semibold text-zinc-900 dark:text-white pt-4"
-        >
+        <h3 class="text-lg font-semibold text-zinc-900 dark:text-white pt-4">
           Properties
         </h3>
-        <p>
-          Prefix an attribute with <code>.</code> to write an IDL property.
-        </p>
+        <p>Prefix an attribute with <code>.</code> to write an IDL property.</p>
 
-        <h3
-          class="text-lg font-semibold text-zinc-900 dark:text-white pt-4"
-        >
+        <h3 class="text-lg font-semibold text-zinc-900 dark:text-white pt-4">
           Lists
         </h3>
         <p>
@@ -519,14 +497,10 @@ export function Templates() {
           </p>
         </div>
 
-        <h3
-          class="text-lg font-semibold text-zinc-900 dark:text-white pt-4"
-        >
+        <h3 class="text-lg font-semibold text-zinc-900 dark:text-white pt-4">
           Events
         </h3>
-        <p>
-          <code>@eventName</code> attaches an event listener.
-        </p>
+        <p><code>@eventName</code> attaches an event listener.</p>
         <div class="code-block">
           <pre><code class="language-ts">import { html } from '@arrow-js/core'
 
@@ -552,19 +526,15 @@ export function ServerRendering() {
         </p>
         <ul class="list-disc pl-6 space-y-2">
           <li>
-            <code>@arrow-js/core</code> stays DOM-first and
-            framework-agnostic.
+            <code>@arrow-js/core</code> stays DOM-first and framework-agnostic.
           </li>
           <li>
             <code>@arrow-js/framework</code> adds async render tracking and
             boundaries.
           </li>
+          <li><code>@arrow-js/ssr</code> renders HTML and payload data.</li>
           <li>
-            <code>@arrow-js/ssr</code> renders HTML and payload data.
-          </li>
-          <li>
-            <code>@arrow-js/hydrate</code> resumes the same view in the
-            browser.
+            <code>@arrow-js/hydrate</code> resumes the same view in the browser.
           </li>
         </ul>
         <p>
@@ -585,9 +555,7 @@ export function ServerRendering() {
           <code>hydrate(root, view, payload)</code>
         </p>
         <ul class="list-disc pl-6 space-y-2">
-          <li>
-            The server emits HTML plus a small JSON payload.
-          </li>
+          <li>The server emits HTML plus a small JSON payload.</li>
           <li>
             The client stages the same view, adopts matching DOM, and reconnects
             reactivity.
@@ -624,8 +592,7 @@ export function ServerRendering() {
             <code>render()</code>.
           </li>
           <li>
-            <code>@arrow-js/ssr</code> exposes
-            <code>renderToString()</code> and
+            <code>@arrow-js/ssr</code> exposes <code>renderToString()</code> and
             <code>serializePayload()</code>.
           </li>
           <li>
@@ -637,9 +604,9 @@ export function ServerRendering() {
           <div class="callout-label">Tip</div>
           <p>
             If the default async behavior works for your case, keep the
-            component declaration simple. The option bag is for custom fallbacks,
-            custom serialization, or easier-to-read SSR ids, not for the common
-            case.
+            component declaration simple. The option bag is for custom
+            fallbacks, custom serialization, or easier-to-read SSR ids, not for
+            the common case.
           </p>
         </div>
       </div>
@@ -666,7 +633,8 @@ export function Examples() {
       </h2>
       <div class="space-y-4 text-zinc-600 dark:text-zinc-400 leading-relaxed">
         <p>
-          Each example runs in the playground with full source you can edit live.
+          Each example runs in the playground with full source you can edit
+          live.
         </p>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
           ${examples.map(
@@ -701,7 +669,7 @@ export function Examples() {
                     : ''}
                 </div>
               </div>
-            `
+            `,
           )}
         </div>
 

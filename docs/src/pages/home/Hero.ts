@@ -1,12 +1,7 @@
 import { html, reactive } from '@arrow-js/core'
+import { CliCommand } from '../../components/CliCommand'
 
 const heroData = reactive({ count: 0 })
-
-function scrollToDocs(e: Event) {
-  e.preventDefault()
-  const el = document.getElementById('what-is-arrow')
-  if (el) el.scrollIntoView({ behavior: 'smooth' })
-}
 
 export function Hero() {
   return html`
@@ -47,24 +42,8 @@ export function Hero() {
           dependencies, and no build step required.
         </p>
 
-        <div class="mt-8 md:mt-10 flex flex-wrap gap-4 justify-center">
-          <a
-            data-rain-collider
-            href="#what-is-arrow"
-            @click="${scrollToDocs}"
-            class="px-7 py-3 bg-arrow-500 text-zinc-950 font-semibold rounded-lg hover:bg-arrow-400 transition-all hover:shadow-lg hover:shadow-arrow-500/20 text-sm"
-          >
-            Get Started
-          </a>
-          <a
-            data-rain-collider
-            href="https://github.com/justin-schroeder/arrow-js"
-            class="px-7 py-3 border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 font-semibold rounded-lg hover:border-arrow-500/50 hover:text-arrow-600 dark:hover:text-arrow-400 transition-all text-sm"
-            target="_blank"
-            rel="noopener"
-          >
-            View on GitHub
-          </a>
+        <div class="mt-8 md:mt-10 flex justify-center">
+          ${CliCommand()}
         </div>
       </div>
 

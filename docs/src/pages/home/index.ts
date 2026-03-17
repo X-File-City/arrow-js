@@ -52,8 +52,7 @@ export function HomePage() {
   const nav = ScrollSpyNav(homeNavGroups)
   return html`
     <div>
-      ${Hero()}
-      ${nav.mobile()}
+      ${Hero()} ${nav.mobile()}
 
       <div class="max-w-7xl mx-auto px-6 pt-20 pb-12">
         <div class="flex gap-12">
@@ -62,9 +61,8 @@ export function HomePage() {
             <div class="flex justify-end mb-4">
               ${CopyPageMenu({ markdownPath: '/docs.md' })}
             </div>
-            ${WhatIsArrow()} ${Quickstart()} ${Components()}
-            ${ReactiveData()} ${WatchingData()} ${Templates()}
-            ${ServerRendering()} ${Examples()}
+            ${WhatIsArrow()} ${Quickstart()} ${Components()} ${ReactiveData()}
+            ${WatchingData()} ${Templates()} ${ServerRendering()} ${Examples()}
           </article>
         </div>
       </div>

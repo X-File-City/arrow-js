@@ -1,24 +1,85 @@
-# <img src="./docs/img/logo.png#gh-light-mode-only" width="200" alt="ArrowJS logo" /><img src="./docs/img/logo-invert.png#gh-dark-mode-only" width="200" alt="ArrowJS logo" />
+# ArrowJS
 
 ![test badge](https://github.com/justin-schroeder/arrow-js/actions/workflows/tests.yml/badge.svg)
 ![size badge](https://img.badgesize.io/https://cdn.jsdelivr.net/npm/@arrow-js/core@latest/dist/index.min.mjs.svg?compression=brotli)
 [![npm version](https://badge.fury.io/js/@arrow-js%2Fcore.svg)](https://badge.fury.io/js/@arrow-js%2Fcore)
 
-## Reactivity without the framework
+## The UI framework for coding agents
 
-[Read the documentation](https://arrow-js.com).
+ArrowJS is a tiny, blazing-fast, type-safe reactive UI runtime built around platform primitives that coding agents deeply understand: JavaScript modules, template literals, and the DOM.
 
-## Features:
+Use `@arrow-js/core` when you want direct reactive DOM updates with minimal API surface. Add `@arrow-js/framework`, `@arrow-js/ssr`, and `@arrow-js/hydrate` when you need async components, server-side rendering, and client-side hydration on top of the same component model.
 
-- The smallest (that we know of) reactive JavaScript library.
-- Static by default, reactive by choice.
-- No Virtual DOM.
-- Ultra fast.
-- Zero dependencies.
-- Tiny core API: `html`, `reactive`, `watch`, and `component`.
-- No build tools required (or even suggested).
-- All knowledge is 100% transferable — it's all native JavaScript.
+[Documentation](https://arrow-js.com) · [API Reference](https://arrow-js.com/api)
 
-## Experimental
+## Core Package
 
-This is an experimental package. Please [read the docs](https://www.arrow-js.com) and consider starring the package to signal you are interested in further development.
+- `@arrow-js/core`: reactive state, tagged-template rendering, components, `pick()` / `props()`, and `nextTick()`
+
+## Framework Packages
+- `@arrow-js/framework`: async component runtime, `boundary()`, `render()`, `toTemplate()`, and document rendering helpers
+- `@arrow-js/ssr`: `renderToString()` and `serializePayload()` for server output
+- `@arrow-js/hydrate`: `hydrate()` and `readPayload()` for adopting SSR output in the browser
+- `@arrow-js/vite-plugin-arrow`: Vite integration package included in the monorepo
+
+## Install
+
+Agent skill: Equip your preferred coding agent to add Arrow to an existing project — or scaffold a new project.
+
+```sh
+npx @arrow-js/skill
+```
+
+Core-only:
+
+```sh
+npm install @arrow-js/core
+```
+
+Full SSR + hydration stack:
+
+```sh
+pnpm add @arrow-js/core @arrow-js/framework @arrow-js/ssr @arrow-js/hydrate
+```
+
+No build step is required for the core runtime. You can also import it directly in the browser:
+
+```html
+<script type="module">
+  import { html, reactive } from 'https://esm.sh/@arrow-js/core'
+</script>
+```
+
+## Core Example
+
+```ts
+import { component, html, reactive } from '@arrow-js/core'
+
+const Counter = component(() => {
+  const state = reactive({ count: 0 })
+
+  return html`<button @click="${() => state.count++}">
+    Clicked ${() => state.count} times
+  </button>`
+})
+
+html`${Counter()}`(document.body)
+```
+
+## Async Components, SSR, and Hydration
+
+Async components use the same `component()` API, but they require the async runtime from `@arrow-js/framework`, `@arrow-js/ssr`, or `@arrow-js/hydrate` to be imported before rendering.
+
+The current project structure keeps that layering explicit:
+
+- `@arrow-js/core` stays DOM-first and framework-agnostic.
+- `@arrow-js/framework` adds async render tracking and boundaries.
+- `@arrow-js/ssr` renders HTML and serializes async payloads on the server.
+- `@arrow-js/hydrate` adopts existing SSR HTML instead of replacing it on the client.
+
+## Monorepo Development
+
+- `pnpm dev`: run the docs app locally
+- `pnpm test`: run Vitest
+- `pnpm test:e2e`: run Playwright tests
+- `pnpm typecheck`: run TypeScript across the workspace
