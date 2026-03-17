@@ -1,11 +1,102 @@
 import { component, html, reactive } from '@arrow-js/core'
 
+function fallbackCopyText(text: string) {
+  const textarea = document.createElement('textarea')
+  textarea.value = text
+  textarea.setAttribute('readonly', '')
+  textarea.style.position = 'fixed'
+  textarea.style.top = '0'
+  textarea.style.left = '-9999px'
+  textarea.style.opacity = '0'
+  document.body.appendChild(textarea)
+  textarea.select()
+  textarea.setSelectionRange(0, text.length)
+
+  let copied = false
+  try {
+    copied = document.execCommand('copy')
+  } catch {
+    copied = false
+  }
+
+  textarea.remove()
+  return copied
+}
+
+async function copyText(text: string) {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text)
+      return true
+    }
+  } catch {
+    // Fall back to a user-gesture copy path when the async clipboard API is unavailable.
+  }
+
+  return fallbackCopyText(text)
+}
+
+function getBurstOrigin(event: MouseEvent) {
+  const target =
+    event.target instanceof Element
+      ? event.target.closest('.cli-command')
+      : null
+
+  if (target instanceof HTMLElement) {
+    const rect = target.getBoundingClientRect()
+    return {
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2 - 8,
+      rect: {
+        left: rect.left,
+        top: rect.top,
+        width: rect.width,
+        height: rect.height,
+      },
+    }
+  }
+
+  return {
+    x: event.clientX,
+    y: event.clientY,
+    rect: null,
+  }
+}
+
 export const CliCommand = component(() => {
   const state = reactive({ copied: false })
   let timer: ReturnType<typeof setTimeout>
+  const command = 'npx @arrow-js/skill'
 
-  function copy() {
-    navigator.clipboard.writeText('npx @arrow-js/skill')
+  async function copy(event: MouseEvent) {
+    console.debug('[arrow:copied-burst] click', {
+      target: event.target,
+      currentTarget: event.currentTarget,
+      clientX: event.clientX,
+      clientY: event.clientY,
+    })
+
+    const copied = await copyText(command)
+    console.debug('[arrow:copied-burst] copy result', { copied })
+
+    if (!copied) {
+      return
+    }
+
+    const origin = getBurstOrigin(event)
+    console.debug('[arrow:copied-burst] dispatch', origin)
+    document.dispatchEvent(
+      new CustomEvent('arrow:copied-burst', {
+        detail: {
+          count: 25,
+          text: 'copied!',
+          x: origin.x,
+          y: origin.y,
+          rect: origin.rect,
+        },
+      })
+    )
+
     state.copied = true
     clearTimeout(timer)
     timer = setTimeout(() => {

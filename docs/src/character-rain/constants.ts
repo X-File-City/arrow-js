@@ -9,7 +9,7 @@ export const TOKEN_GROUPS = {
   comment:    ['//'],
 } as const
 
-export type TokenRole = keyof typeof TOKEN_GROUPS
+export type TokenRole = keyof typeof TOKEN_GROUPS | 'copied'
 
 export const ALL_TOKENS: { char: string; role: TokenRole }[] = []
 for (const [role, tokens] of Object.entries(TOKEN_GROUPS)) {
@@ -28,6 +28,7 @@ export const TOKEN_COLORS: Record<'dark' | 'light', Record<TokenRole, string>> =
     comment:     '#ffb000',
     function:    '#ffb000',
     builtin:     '#ffb000',
+    copied:      '#4ade80',
   },
   light: {
     keyword:     '#71717a',
@@ -37,6 +38,7 @@ export const TOKEN_COLORS: Record<'dark' | 'light', Record<TokenRole, string>> =
     comment:     '#71717a',
     function:    '#71717a',
     builtin:     '#71717a',
+    copied:      '#16a34a',
   },
 }
 

@@ -8,6 +8,7 @@ import {
   hideCursor,
   updateColliders,
   updateWalls,
+  spawnBurst,
   type RainEngine,
 } from './engine'
 import {
@@ -76,8 +77,64 @@ export function initCharacterRain(heroEl: HTMLElement): () => void {
     function onMouseLeave() {
       hideCursor(rain)
     }
+    function onCopiedBurst(event: Event) {
+      const customEvent = event as CustomEvent<{
+        count?: number
+        text?: string
+        x: number
+        y: number
+        rect?: {
+          left: number
+          top: number
+          width: number
+          height: number
+        } | null
+      }>
+      const heroRect = el.getBoundingClientRect()
+      const x = customEvent.detail.x - heroRect.left
+      const y = customEvent.detail.y - heroRect.top
+      const rect = customEvent.detail.rect
+        ? {
+            x: customEvent.detail.rect.left - heroRect.left,
+            y: customEvent.detail.rect.top - heroRect.top,
+            width: customEvent.detail.rect.width,
+            height: customEvent.detail.rect.height,
+          }
+        : undefined
+
+      console.debug('[arrow:copied-burst] received', {
+        detail: customEvent.detail,
+        heroRect: {
+          left: heroRect.left,
+          top: heroRect.top,
+          width: heroRect.width,
+          height: heroRect.height,
+        },
+        localX: x,
+        localY: y,
+      })
+
+      if (
+        x < -40 ||
+        x > heroRect.width + 40 ||
+        y < -40 ||
+        y > heroRect.height + 40
+      ) {
+        console.debug('[arrow:copied-burst] ignored outside hero bounds')
+        return
+      }
+
+      console.debug('[arrow:copied-burst] spawning')
+      spawnBurst(rain, x, y, {
+        char: customEvent.detail.text ?? 'copied!',
+        count: customEvent.detail.count ?? 25,
+        role: 'copied',
+        sourceRect: rect,
+      })
+    }
     el.addEventListener('mousemove', onMouseMove)
     el.addEventListener('mouseleave', onMouseLeave)
+    document.addEventListener('arrow:copied-burst', onCopiedBurst as EventListener)
 
     // --- Resize handling ---
     let resizeTimer: ReturnType<typeof setTimeout> | null = null
@@ -97,6 +154,7 @@ export function initCharacterRain(heroEl: HTMLElement): () => void {
       document.removeEventListener('visibilitychange', onVisibility)
       el.removeEventListener('mousemove', onMouseMove)
       el.removeEventListener('mouseleave', onMouseLeave)
+      document.removeEventListener('arrow:copied-burst', onCopiedBurst as EventListener)
       window.removeEventListener('resize', onResize)
       if (resizeTimer) clearTimeout(resizeTimer)
       destroyEngine(rain)

@@ -18,6 +18,7 @@ export interface CharacterBody {
   maxOpacity: number
   age: number
   lifetime: number
+  fadeDuration: number
   width: number
   height: number
 }
@@ -34,6 +35,18 @@ export interface RainEngine {
   measureCtx: CanvasRenderingContext2D
   charSizes: Map<string, { width: number; height: number }>
   paused: boolean
+}
+
+export interface BurstSpec {
+  char: string
+  count: number
+  role?: TokenRole
+  sourceRect?: {
+    x: number
+    y: number
+    width: number
+    height: number
+  }
 }
 
 function getSpawnConfig() {
@@ -209,6 +222,26 @@ function randomToken(): { char: string; role: TokenRole } {
   return ALL_TOKENS[Math.floor(Math.random() * ALL_TOKENS.length)]
 }
 
+function getCharacterSize(
+  rain: RainEngine,
+  char: string
+): { width: number; height: number } {
+  const cached = rain.charSizes.get(char)
+
+  if (cached) {
+    return cached
+  }
+
+  rain.measureCtx.font = FONT
+  const metrics = rain.measureCtx.measureText(char)
+  const size = {
+    width: metrics.width + 10,
+    height: 24,
+  }
+  rain.charSizes.set(char, size)
+  return size
+}
+
 function getTheme(): 'dark' | 'light' {
   return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'
 }
@@ -219,10 +252,14 @@ function randomOpacity(): number {
   return range.min + Math.random() * (range.max - range.min)
 }
 
+function randomLifetime(): number {
+  return SPAWN.lifetimeMin + Math.random() * (SPAWN.lifetimeMax - SPAWN.lifetimeMin)
+}
+
 export function spawnCharacter(rain: RainEngine): void {
   const config = getSpawnConfig()
   const token = randomToken()
-  const size = rain.charSizes.get(token.char) || { width: 20, height: 22 }
+  const size = getCharacterSize(rain, token.char)
   const rect = rain.heroEl.getBoundingClientRect()
   const margin = rect.width * config.spawnMargin
   const x = margin + Math.random() * (rect.width - margin * 2)
@@ -249,10 +286,104 @@ export function spawnCharacter(rain: RainEngine): void {
     opacity: maxOpacity,
     maxOpacity,
     age: 0,
-    lifetime: SPAWN.lifetimeMin + Math.random() * (SPAWN.lifetimeMax - SPAWN.lifetimeMin),
+    lifetime: randomLifetime(),
+    fadeDuration: SPAWN.fadeDuration,
     width: size.width,
     height: size.height,
   })
+}
+
+function spawnBurstCharacter(
+  rain: RainEngine,
+  x: number,
+  y: number,
+  char: string,
+  role: TokenRole
+) {
+  const size = getCharacterSize(rain, char)
+  const body = Matter.Bodies.rectangle(x, y, size.width, size.height, {
+    friction: PHYSICS.characterFriction,
+    restitution: 0.72,
+    density: PHYSICS.characterDensity,
+    frictionAir: 0.016,
+    angle: (Math.random() - 0.5) * 1.8,
+    label: 'character',
+  })
+
+  const angle = Math.random() * Math.PI * 2
+  const speed = 2.6 + Math.random() * 4.8
+  const spin = (Math.random() - 0.5) * 1.8
+
+  Matter.Body.setVelocity(body, {
+    x: Math.cos(angle) * speed,
+    y: Math.sin(angle) * speed - 1.5,
+  })
+  Matter.Body.setAngularVelocity(body, spin)
+  Matter.Composite.add(rain.engine.world, [body])
+
+  rain.characters.push({
+    body,
+    char,
+    role,
+    opacity: 0.92,
+    maxOpacity: 0.92,
+    age: 0,
+    lifetime: randomLifetime(),
+    fadeDuration: SPAWN.fadeDuration * 0.45,
+    height: size.height,
+    width: size.width,
+  })
+}
+
+function randomPerimeterPoint(rect: {
+  x: number
+  y: number
+  width: number
+  height: number
+}) {
+  const perimeter = rect.width * 2 + rect.height * 2
+  let offset = Math.random() * perimeter
+
+  if (offset <= rect.width) {
+    return { x: rect.x + offset, y: rect.y }
+  }
+  offset -= rect.width
+
+  if (offset <= rect.height) {
+    return { x: rect.x + rect.width, y: rect.y + offset }
+  }
+  offset -= rect.height
+
+  if (offset <= rect.width) {
+    return { x: rect.x + rect.width - offset, y: rect.y + rect.height }
+  }
+  offset -= rect.width
+
+  return { x: rect.x, y: rect.y + rect.height - offset }
+}
+
+export function spawnBurst(
+  rain: RainEngine,
+  x: number,
+  y: number,
+  spec: BurstSpec
+): void {
+  const role = spec.role ?? 'copied'
+  console.debug('[arrow:copied-burst] spawnBurst', {
+    x,
+    y,
+    char: spec.char,
+    count: spec.count,
+    role,
+    paused: rain.paused,
+  })
+
+  for (let i = 0; i < spec.count; i++) {
+    const origin = spec.sourceRect
+      ? randomPerimeterPoint(spec.sourceRect)
+      : { x, y }
+    spawnBurstCharacter(rain, origin.x, origin.y, spec.char, role)
+  }
 }
 
 export function ageAndFade(rain: RainEngine, dt: number): void {
@@ -263,7 +394,7 @@ export function ageAndFade(rain: RainEngine, dt: number): void {
     if (cb.age <= cb.lifetime) {
       cb.opacity = cb.maxOpacity
     } else {
-      const fadeProgress = (cb.age - cb.lifetime) / SPAWN.fadeDuration
+      const fadeProgress = (cb.age - cb.lifetime) / cb.fadeDuration
       if (fadeProgress >= 1) {
         toRemove.push(cb)
       } else {

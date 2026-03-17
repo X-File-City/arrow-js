@@ -7,7 +7,12 @@ import arrowHtmlGrammar from './syntaxes/arrowjs-html.tmLanguage.json'
 
 async function findMatches(pattern: string, line: string) {
   const engine = await createOnigurumaEngine(wasm)
-  const scanner = engine.createScanner([pattern])
+  const scanner = engine.createScanner([pattern]) as {
+    findNextMatchSync: (
+      text: unknown,
+      index: number
+    ) => { captureIndices: Array<{ start: number; end: number }> } | null
+  }
   const text = engine.createString(line)
   const matches = []
   let index = 0
@@ -60,6 +65,7 @@ describe('arrowjs-html-syntax', () => {
     expect(arrowTemplate.contentName).toBe('meta.embedded.block.html')
     expect(arrowTemplate.patterns).toEqual([
       { include: 'source.ts#template-substitution-element' },
+      { include: 'source.ts#string-character-escape' },
       { include: 'text.html.arrowjs' },
     ])
     expect(arrowHtmlGrammar.scopeName).toBe('text.html.arrowjs')
@@ -76,6 +82,14 @@ describe('arrowjs-html-syntax', () => {
     expect(arrowTemplate.endCaptures['1'].name).toBe(
       'punctuation.definition.string.template.end.js'
     )
+  })
+
+  it('preserves escaped backticks inside embedded code samples', () => {
+    const arrowTemplate = grammar.patterns[0]
+
+    expect(arrowTemplate.patterns).toContainEqual({
+      include: 'source.ts#string-character-escape',
+    })
   })
 
   it('can find interpolation boundaries repeatedly in nested template samples', async () => {

@@ -241,13 +241,13 @@ section[id] {
 }
 
 /* Twoslash: hover underline */
-.code-block pre.twoslash .twoslash-hover {
+:is(.code-block, .hero-code) pre.twoslash .twoslash-hover {
   position: relative;
   border-bottom-style: dotted;
 }
 
 /* Twoslash: popup panel */
-.code-block pre.twoslash .twoslash-popup-container {
+:is(.code-block, .hero-code) pre.twoslash .twoslash-popup-container {
   z-index: 80;
   border-radius: 8px;
   width: max-content;
@@ -257,11 +257,35 @@ section[id] {
   line-height: 1.55;
 }
 
-.code-block pre.twoslash .twoslash-popup-arrow {
+/* Hover popups should not inflate code block scroll width while idle. Keep them
+   fixed/off-screen until hover, then entry-client.ts will position them. */
+:is(.code-block, .hero-code) pre.twoslash :is(.twoslash-hover, .twoslash-error-hover)
+  > .twoslash-popup-container {
+  position: fixed;
+  left: -9999px;
+  top: -9999px;
+  visibility: hidden;
+  transform: none;
+}
+
+:is(
+    .code-block pre.twoslash .twoslash-hover:hover,
+    .code-block pre.twoslash .twoslash-error-hover:hover,
+    .code-block pre.twoslash .twoslash-query-persisted,
+    .code-block pre.twoslash .twoslash-query-line,
+    .hero-code pre.twoslash .twoslash-hover:hover,
+    .hero-code pre.twoslash .twoslash-error-hover:hover,
+    .hero-code pre.twoslash .twoslash-query-persisted,
+    .hero-code pre.twoslash .twoslash-query-line)
+  > .twoslash-popup-container {
+  visibility: visible;
+}
+
+:is(.code-block, .hero-code) pre.twoslash .twoslash-popup-arrow {
   border-radius: 1px;
 }
 
-.code-block pre.twoslash .twoslash-popup-code {
+:is(.code-block, .hero-code) pre.twoslash .twoslash-popup-code {
   padding: 8px 12px !important;
   line-height: 1.6;
   max-height: 240px;
@@ -270,24 +294,24 @@ section[id] {
   word-break: break-word;
 }
 
-.code-block pre.twoslash .twoslash-popup-docs {
+:is(.code-block, .hero-code) pre.twoslash .twoslash-popup-docs {
   padding: 8px 12px !important;
   line-height: 1.5;
 }
 
 /* Twoslash: error lines */
-.code-block pre.twoslash .twoslash-error-line {
+:is(.code-block, .hero-code) pre.twoslash .twoslash-error-line {
   border-radius: 3px;
 }
 
 /* Twoslash: completion list */
-.code-block pre.twoslash .twoslash-completion-list {
+:is(.code-block, .hero-code) pre.twoslash .twoslash-completion-list {
   border-radius: 6px;
   font-size: 0.8125rem;
 }
 
 /* Twoslash: highlighted ranges */
-.code-block pre.twoslash .twoslash-highlighted {
+:is(.code-block, .hero-code) pre.twoslash .twoslash-highlighted {
   border-radius: 3px;
 }
 
@@ -373,15 +397,15 @@ section[id] {
 }
 
 .cli-command:hover {
-  border-color: rgba(255, 176, 0, 0.4);
-  box-shadow: 0 0 32px -8px rgba(255, 176, 0, 0.18),
-    0 0 0 1px rgba(255, 176, 0, 0.06);
+  border-color: rgba(74, 222, 128, 0.4);
+  box-shadow: 0 0 32px -8px rgba(74, 222, 128, 0.18),
+    0 0 0 1px rgba(74, 222, 128, 0.06);
 }
 
 [data-theme="light"] .cli-command:hover {
-  border-color: rgba(255, 176, 0, 0.5);
-  box-shadow: 0 0 24px -6px rgba(255, 176, 0, 0.15),
-    0 0 0 1px rgba(255, 176, 0, 0.1);
+  border-color: rgba(22, 163, 74, 0.42);
+  box-shadow: 0 0 24px -6px rgba(22, 163, 74, 0.16),
+    0 0 0 1px rgba(22, 163, 74, 0.1);
 }
 
 .cli-command:active {
@@ -389,8 +413,8 @@ section[id] {
 }
 
 .cli-command:focus-visible {
-  border-color: var(--color-arrow-500);
-  box-shadow: 0 0 0 3px rgba(255, 176, 0, 0.2);
+  border-color: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
 }
 
 .cli-prompt {

@@ -132,6 +132,7 @@ test('docs TypeScript examples expose Twoslash hover data', async ({ page }) => 
   await expect(block).toBeVisible()
 
   const hoverToken = block.locator('.twoslash-hover').first()
+  await hoverToken.scrollIntoViewIfNeeded()
   const box = await hoverToken.boundingBox()
 
   if (!box) {
@@ -174,6 +175,9 @@ test('home and docs code samples highlight Arrow template HTML segments', async 
   expect(heroHtmlTokens[' @click']).toContain('--shiki-light:#986801')
   expect(heroHtmlTokens['      Clicked ']).toContain('--shiki-light:#50A14F')
   expect(heroHtmlTokens.button).not.toBe(heroHtmlTokens[' @click'])
+  await expect
+    .poll(() => heroCode.evaluate((pre) => pre.scrollWidth - pre.clientWidth))
+    .toBeLessThan(2)
 
   await page.goto('/docs/')
 

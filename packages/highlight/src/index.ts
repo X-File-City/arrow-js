@@ -617,8 +617,9 @@ function tokenizeTaggedTemplate(
     }
 
     attrValueStart = i
-    if (source[i] === '"' || source[i] === "'") {
-      attrQuote = source[i]
+    const quote = source[i]
+    if (quote === '"' || quote === "'") {
+      attrQuote = quote
       i++
     } else {
       attrQuote = null
