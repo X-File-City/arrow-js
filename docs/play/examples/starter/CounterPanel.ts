@@ -1,16 +1,16 @@
 import { component, html, reactive } from '@arrow-js/core'
 
-export const CounterPanel = component((props: { model: { count: number } }) => {
+export const CounterPanel = component((props: { count: number }) => {
   const local = reactive({ count: 0 })
 
   return html`<div class="counter">
     <div class="gauges">
       <div class="gauge">
         <span class="gauge-label">App state</span>
-        <span class="gauge-value">${() => props.model.count}</span>
+        <span class="gauge-value">${() => props.count}</span>
         <div class="gauge-actions">
-          <button class="btn btn--amber btn--sm" @click="${() => props.model.count--}">−</button>
-          <button class="btn btn--amber btn--sm" @click="${() => props.model.count++}">+</button>
+          <button class="btn btn--amber btn--sm" @click="${() => props.count--}">−</button>
+          <button class="btn btn--amber btn--sm" @click="${() => props.count++}">+</button>
         </div>
         <span class="gauge-hint">Visible to other components</span>
       </div>

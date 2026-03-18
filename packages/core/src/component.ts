@@ -73,6 +73,11 @@ const propsProxyHandler: ProxyHandler<SourceBox> = {
     if (!source) return
     return (source as Record<PropertyKey, unknown>)[key as PropertyKey]
   },
+  set(target, key, value) {
+    const source = target[0]
+    if (!source) return false
+    return Reflect.set(source as object, key, value)
+  },
 }
 
 const narrowedPropsHandler: ProxyHandler<{
@@ -83,6 +88,10 @@ const narrowedPropsHandler: ProxyHandler<{
     return target.k.includes(key)
       ? (target.s as Record<PropertyKey, unknown>)[key as PropertyKey]
       : undefined
+  },
+  set(target, key, value) {
+    if (!target.k.includes(key)) return false
+    return Reflect.set(target.s, key, value)
   },
 }
 

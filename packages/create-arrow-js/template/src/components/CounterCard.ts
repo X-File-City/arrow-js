@@ -1,12 +1,8 @@
 import { component, html, reactive } from '@arrow-js/core'
 import type { Props } from '@arrow-js/core'
 
-interface CounterModel {
+interface CounterCardProps {
   count: number
-}
-
-type CounterCardProps = Record<PropertyKey, unknown> & {
-  model: CounterModel
 }
 
 export const CounterCard = component((props: Props<CounterCardProps>) => {
@@ -17,7 +13,7 @@ export const CounterCard = component((props: Props<CounterCardProps>) => {
   return html`<section class="card card--contrast">
     <div class="card__header">
       <p class="eyebrow eyebrow--muted">Hydrated component</p>
-      <strong class="counter-value">${() => props.model.count}</strong>
+      <strong class="counter-value">${() => props.count}</strong>
     </div>
 
     <p class="card__copy">
@@ -26,8 +22,8 @@ export const CounterCard = component((props: Props<CounterCardProps>) => {
     </p>
 
     <div class="button-row">
-      <button class="button" @click="${() => props.model.count--}">Decrement</button>
-      <button class="button" @click="${() => props.model.count++}">Increment</button>
+      <button class="button" @click="${() => props.count--}">Decrement</button>
+      <button class="button" @click="${() => props.count++}">Increment</button>
       <button class="button button--ghost" @click="${() => local.clicks++}">
         Local clicks ${() => local.clicks}
       </button>

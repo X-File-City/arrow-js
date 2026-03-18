@@ -30,7 +30,7 @@ export const App = component(() => {
 
       <div class="divider"></div>
 
-      ${CounterPanel({ model: state })}
+      ${CounterPanel(state)}
 
       <div class="card-footer">
         <strong>${() => state.name || 'World'}</strong> has

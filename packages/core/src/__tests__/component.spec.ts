@@ -242,4 +242,39 @@ describe('component', () => {
     await nextTick()
     expect(root.textContent).toBe('2')
   })
+
+  it('forwards top-level prop writes to the source object', async () => {
+    const data = reactive({ count: 1 })
+    const Child = component((props: Props<{ count: number }>) =>
+      html`<button @click="${() => props.count++}">${() => props.count}</button>`
+    )
+    const root = document.createElement('div')
+
+    html`<main>${Child(data)}</main>`(root)
+
+    const button = root.querySelector('button') as HTMLButtonElement
+    button.click()
+    await nextTick()
+
+    expect(data.count).toBe(2)
+    expect(button.textContent).toBe('2')
+  })
+
+  it('forwards top-level writes for narrowed props created with pick()', async () => {
+    const data = reactive({ count: 1, other: 'value' })
+    const Child = component((props: Props<{ count: number }>) =>
+      html`<button @click="${() => props.count++}">${() => props.count}</button>`
+    )
+    const root = document.createElement('div')
+
+    html`<main>${Child(pick(data, 'count'))}</main>`(root)
+
+    const button = root.querySelector('button') as HTMLButtonElement
+    button.click()
+    await nextTick()
+
+    expect(data.count).toBe(2)
+    expect(button.textContent).toBe('2')
+    expect(data.other).toBe('value')
+  })
 })

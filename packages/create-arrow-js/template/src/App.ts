@@ -36,7 +36,7 @@ export const App = component(() =>
       </div>
 
       <div class="hero__grid">
-        ${CounterCard({ model: state })}
+        ${CounterCard(state)}
         ${boundary(WelcomeCard())}
       </div>
     </section>
