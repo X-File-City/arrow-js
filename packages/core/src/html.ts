@@ -134,9 +134,10 @@ type RenderController = ((
 }
 type InternalTemplate = ArrowTemplate & {
   d?: () => void
-  _a?: ArrowExpression[]
+  _a?: ArrayLike<unknown>
   _h?: Chunk
   _m?: boolean
+  _o?: number
   _p?: ChunkProto
   _s?: TemplateStringsArray | string[]
 }
@@ -262,7 +263,7 @@ function syncTemplateToChunk(
   chunk.i = template._i
   template._h = chunk
   template._m = mounted
-  writeExpressions(template._a!, chunk.e)
+  writeExpressions(template._a!, chunk.e, template._o)
 }
 
 function takeChunkRecord(): Chunk {
@@ -418,16 +419,15 @@ export function html(
   strings: TemplateStringsArray | string[],
   ...expSlots: ArrowExpression[]
 ): ArrowTemplate
-export function html(
-  strings: TemplateStringsArray | string[],
-  ...expSlots: ArrowExpression[]
-): ArrowTemplate {
+export function html(strings: TemplateStringsArray | string[]): ArrowTemplate {
+  const args = arguments
   const template = ((el?: ParentNode) =>
     renderTemplate(template as InternalTemplate, el)) as InternalTemplate
   template.isT = true
-  template._a = expSlots
+  template._a = args
   template._c = ensureChunk
   template._m = false
+  template._o = 1
   template._s = strings
   template.key = setTemplateKey
   template.id = setTemplateId
@@ -466,7 +466,7 @@ function renderTemplate(template: InternalTemplate, el?: ParentNode) {
   if (!template._m) {
     template._m = true
     if (!chunk.b) {
-      writeExpressions(template._a!, chunk.e)
+      writeExpressions(template._a!, chunk.e, template._o)
       return createBindings(chunk, el)
     }
     return el ? el.appendChild(chunk.dom) && el : chunk.dom

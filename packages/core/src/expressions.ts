@@ -14,12 +14,13 @@ export function createExpressionBlock(len: number): number {
 }
 
 export function writeExpressions(
-  expSlots: ArrowExpression[],
-  pointer: number
+  expSlots: ArrayLike<unknown>,
+  pointer: number,
+  offset = 0
 ): void {
   const len = expressionPool[pointer] as number
   for (let i = 1; i <= len; i++) {
-    const nextValue = expSlots[i - 1]
+    const nextValue = expSlots[offset + i - 1] as ArrowExpression
     const target = pointer + i
     if (Object.is(expressionPool[target], nextValue)) continue
     expressionPool[target] = nextValue
