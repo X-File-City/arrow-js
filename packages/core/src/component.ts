@@ -1,11 +1,10 @@
-import type { ArrowTemplate } from './html'
+import type { ArrowTemplate, ArrowTemplateKey } from './html'
 import { reactive } from './reactive'
 import type { Reactive, ReactiveTarget } from './reactive'
 
 export type Props<T extends ReactiveTarget> = {
   [P in keyof T]: T[P] extends ReactiveTarget ? Props<T[P]> | T[P] : T[P]
 }
-type ArrowTemplateKey = string | number | undefined
 type SyncFactory<T extends ReactiveTarget> =
   | (() => ArrowTemplate)
   | ((props: Props<T>) => ArrowTemplate)

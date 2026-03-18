@@ -26,6 +26,11 @@ test('api page is server rendered without javascript', async ({ browser }) => {
   await expect(page.locator('article')).toContainText('reactive()')
   await expect(page.locator('nav .nav-group-title').first()).toHaveText('@arrow-js/core')
   await expect(page.locator('body')).not.toContainText('Changelog')
+  await expect(page.locator('#reactive')).not.toContainText('---cut-start---')
+  await expect(page.locator('#reactive')).not.toContainText('---cut-end---')
+  await expect(page.locator('#reactive .code-block').first()).toContainText(
+    '// Observable state'
+  )
 
   await context.close()
 })
@@ -143,6 +148,93 @@ test('docs TypeScript examples expose Twoslash hover data', async ({ page }) => 
 
   await expect(block.locator('.twoslash-popup-container').first()).toBeVisible()
   expect(messages).toEqual([])
+})
+
+test('api TypeScript examples expose Twoslash hover data', async ({ page }) => {
+  const messages: string[] = []
+  page.on('console', (msg) => {
+    if (msg.type() === 'error' || msg.type() === 'warning') {
+      messages.push(msg.text())
+    }
+  })
+
+  await page.goto('/api')
+
+  await expect
+    .poll(() => page.locator('article pre.twoslash').count())
+    .toBeGreaterThan(10)
+
+  const block = page.locator('article pre.twoslash').first()
+  await expect(block).toBeVisible()
+
+  const hoverToken = block.locator('.twoslash-hover').first()
+  await hoverToken.scrollIntoViewIfNeeded()
+  const box = await hoverToken.boundingBox()
+
+  if (!box) {
+    throw new Error('Unable to measure API Twoslash hover token.')
+  }
+
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
+
+  await expect(block.locator('.twoslash-popup-container').first()).toBeVisible()
+  expect(messages).toEqual([])
+})
+
+test('api and docs TypeScript samples render as Twoslash without placeholder aliases', async ({
+  page,
+}) => {
+  for (const path of ['/api', '/docs/']) {
+    await page.goto(path)
+    await expect.poll(() => page.locator('pre.twoslash').count()).toBeGreaterThan(0)
+
+    const summary = await page.evaluate(() => {
+      const article = document.querySelector('article')
+
+      if (!article) {
+        throw new Error('Missing article container.')
+      }
+
+      return {
+        twoslash: article.querySelectorAll('pre.twoslash').length,
+        rawTs: article.querySelectorAll('pre code.language-ts').length,
+        text: article.textContent ?? '',
+      }
+    })
+
+    expect(summary.twoslash).toBeGreaterThan(0)
+    expect(summary.rawTs).toBe(0)
+    expect(summary.text).not.toContain('---cut-start---')
+    expect(summary.text).not.toContain('---cut-end---')
+  }
+
+  const apiArticle = page.locator('article')
+  await expect(apiArticle).not.toContainText('type ArrowTemplate = unknown')
+  await expect(apiArticle).not.toContainText('type Component = unknown')
+  await expect(apiArticle).not.toContainText('type ComponentWithProps<T> = unknown')
+  await expect(apiArticle).not.toContainText('type RenderPayload = unknown')
+})
+
+test('reactive api examples all render as Twoslash blocks', async ({ page }) => {
+  await page.goto('/api')
+
+  await expect
+    .poll(() => page.locator('#reactive pre.twoslash').count())
+    .toBe(4)
+
+  const firstBlock = page.locator('#reactive pre.twoslash').first()
+  const hoverToken = firstBlock.locator('.twoslash-hover').first()
+  await hoverToken.scrollIntoViewIfNeeded()
+
+  const box = await hoverToken.boundingBox()
+
+  if (!box) {
+    throw new Error('Unable to measure reactive() Twoslash hover token.')
+  }
+
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
+
+  await expect(firstBlock.locator('.twoslash-popup-container').first()).toBeVisible()
 })
 
 test('home and docs code samples highlight Arrow template HTML segments', async ({ page }) => {

@@ -17,13 +17,25 @@ export {
 
 export { nextTick } from './common'
 
-export type { ArrowTemplate } from './html'
+export type {
+  ArrowExpression,
+  ArrowRenderable,
+  ArrowTemplate,
+  ArrowTemplateKey,
+  ParentNode,
+} from './html'
 
 export type {
   AsyncComponentOptions,
   Component,
+  ComponentCall,
   ComponentWithProps,
   Props,
 } from './component'
 
-export type { Computed, Reactive, ReactiveTarget } from './reactive'
+export type {
+  Computed,
+  PropertyObserver,
+  Reactive,
+  ReactiveTarget,
+} from './reactive'

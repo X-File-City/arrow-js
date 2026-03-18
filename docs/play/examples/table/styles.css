@@ -1,0 +1,138 @@
+.tbl {
+  --bg: #fafaf8;
+  --text: #1d1d1f;
+  --muted: #86868b;
+  --surface: #fff;
+  --border: #e4e4e7;
+  --hover: #f4f4f5;
+  --accent: #6366f1;
+  --badge-bg: #f0f0ff;
+  --badge-text: #4f46e5;
+  --cols: 1fr 100px 72px;
+
+  min-height: 100vh;
+  padding: 48px 24px;
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.5 -apple-system, 'IBM Plex Sans', system-ui, sans-serif;
+}
+
+html[data-theme='dark'] .tbl {
+  --bg: #18181b;
+  --text: #e4e4e7;
+  --muted: #71717a;
+  --surface: #27272a;
+  --border: #3f3f46;
+  --hover: #303033;
+  --accent: #818cf8;
+  --badge-bg: rgba(99, 102, 241, 0.15);
+  --badge-text: #a5b4fc;
+}
+
+.tbl > * {
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.tbl-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 24px;
+}
+
+.tbl-header h1 {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.tbl-count {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.tbl-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.tbl-head,
+.tbl-row {
+  display: grid;
+  grid-template-columns: var(--cols);
+  align-items: center;
+}
+
+.tbl-head {
+  border-bottom: 1px solid var(--border);
+}
+
+.tbl-th {
+  appearance: none;
+  border: none;
+  background: transparent;
+  padding: 12px 16px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  text-align: left;
+  cursor: pointer;
+  user-select: none;
+  transition: color 150ms;
+  white-space: nowrap;
+}
+
+.tbl-th:last-child {
+  text-align: right;
+}
+
+.tbl-th:hover { color: var(--text); }
+.tbl-th[data-active='true'] { color: var(--accent); }
+
+.tbl-indicator {
+  display: inline-block;
+  width: 14px;
+  text-align: center;
+  font-size: 11px;
+}
+
+.tbl-row {
+  transition: background 120ms;
+}
+
+.tbl-row:hover { background: var(--hover); }
+
+.tbl-row:not(:last-child) {
+  border-bottom: 1px solid var(--border);
+}
+
+.tbl-cell {
+  padding: 11px 16px;
+  font-size: 14px;
+}
+
+.tbl-name { font-weight: 600; }
+
+.tbl-tricks {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.tbl-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--badge-bg);
+  color: var(--badge-text);
+}

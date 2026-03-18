@@ -583,36 +583,22 @@ export function Examples() {
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
           ${examples.map(
             (entry) => html`
-              <div
-                class="rounded-lg border border-zinc-200 dark:border-zinc-800 p-5"
+              <a
+                href="${playgroundExampleHref(entry.id)}"
+                class="group block rounded-lg border border-zinc-200 dark:border-zinc-800 p-5 no-underline transition-colors hover:border-arrow-400 dark:hover:border-arrow-600 hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
               >
                 <h3
                   class="text-base font-semibold text-zinc-900 dark:text-white mb-1.5"
                 >
-                  ${entry.title}
+                  <span class="mr-1.5 example-icon">${entry.icon}</span>${entry.title}
                 </h3>
                 <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-3">
                   ${entry.description}
                 </p>
-                <div class="flex items-center gap-4 text-sm">
-                  <a
-                    href="${playgroundExampleHref(entry.id)}"
-                    class="text-arrow-600 dark:text-arrow-400 font-medium hover:underline underline-offset-2"
-                  >
-                    Open in Playground
-                  </a>
-                  ${entry.sourceUrl
-                    ? html`<a
-                        href="${entry.sourceUrl}"
-                        class="text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 hover:underline underline-offset-2"
-                        target="_blank"
-                        rel="noopener"
-                      >
-                        Source
-                      </a>`
-                    : ''}
-                </div>
-              </div>
+                <span
+                  class="text-sm font-medium text-arrow-600 dark:text-arrow-400 group-hover:underline underline-offset-2"
+                >Open in Playground &rarr;</span>
+              </a>
             `,
           )}
         </div>

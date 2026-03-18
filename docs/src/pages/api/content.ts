@@ -1,4 +1,11 @@
 import { html } from '@arrow-js/core'
+import { TsCodeBlock } from '../../components/TsCodeBlock'
+import {
+  coreTypeReferenceSnippet,
+  frameworkTypeReferenceSnippet,
+  hydrateTypeReferenceSnippet,
+  ssrTypeReferenceSnippet,
+} from '../../components/typeReferenceSnippets'
 
 export function ReactiveApi() {
   return html`
@@ -16,13 +23,13 @@ export function ReactiveApi() {
         >
           Signatures
         </h3>
-        <div class="code-block">
-          <pre><code class="language-ts">// Observable state
-function reactive&lt;T extends ReactiveTarget&gt;(data: T): Reactive&lt;T&gt;
+        ${TsCodeBlock(`import type { Computed, Reactive, ReactiveTarget } from '@arrow-js/core'
+
+// Observable state
+declare function reactive&lt;T extends ReactiveTarget&gt;(data: T): Reactive&lt;T&gt;
 
 // Computed value
-function reactive&lt;T&gt;(effect: () =&gt; T): Computed&lt;T&gt;</code></pre>
-        </div>
+declare function reactive&lt;T&gt;(effect: () =&gt; T): Computed&lt;T&gt;`)}
 
         <h3
           class="text-lg font-semibold text-zinc-900 dark:text-white pt-4"
@@ -34,14 +41,12 @@ function reactive&lt;T&gt;(effect: () =&gt; T): Computed&lt;T&gt;</code></pre>
           are tracked inside watchers and template expressions. Property
           writes notify observers.
         </p>
-        <div class="code-block">
-          <pre><code class="language-ts">import { reactive } from '@arrow-js/core'
+        ${TsCodeBlock(`import { reactive } from '@arrow-js/core'
 
 const data = reactive({ count: 0, items: [] as string[] })
 
 data.count++              // triggers observers
-data.items.push('hello')  // array mutations trigger parent observers</code></pre>
-        </div>
+data.items.push('hello')  // array mutations trigger parent observers`)}
 
         <h3
           class="text-lg font-semibold text-zinc-900 dark:text-white pt-4"
@@ -52,27 +57,30 @@ data.items.push('hello')  // array mutations trigger parent observers</code></pr
           Pass an arrow function to create a computed value. The expression
           re-evaluates when tracked reads change.
         </p>
-        <div class="code-block">
-          <pre><code class="language-ts">const props = reactive({ count: 2, multiplier: 10 })
+        ${TsCodeBlock(`import { reactive } from '@arrow-js/core'
+
+const props = reactive({ count: 2, multiplier: 10 })
 
 const data = reactive({
   total: reactive(() =&gt; props.count * props.multiplier)
 })
 
-data.total // 20 — reads like a normal value, auto-updates</code></pre>
-        </div>
+data.total // 20 — reads like a normal value, auto-updates`)}
 
         <h3
           class="text-lg font-semibold text-zinc-900 dark:text-white pt-4"
         >
           Manual subscriptions
         </h3>
-        <div class="code-block">
-          <pre><code class="language-ts">type PropertyObserver&lt;T&gt; = (newValue?: T, oldValue?: T) =&gt; void
+        ${TsCodeBlock(`// ---cut-start---
+import { reactive } from '@arrow-js/core'
+import type { PropertyObserver } from '@arrow-js/core'
+const data = reactive({ count: 0 })
+const callback: PropertyObserver&lt;number&gt; = () =&gt; {}
+// ---cut-end---
 
 data.$on('count', (newVal, oldVal) =&gt; { /* ... */ })
-data.$off('count', callback)</code></pre>
-        </div>
+data.$off('count', callback)`)}
         <p>
           Prefer <code>watch()</code> or template expressions over manual
           subscriptions. Use <code>$on</code>/<code>$off</code> only when
@@ -113,12 +121,12 @@ export function WatchApi() {
         </h3>
         <div class="code-block">
           <pre><code class="language-ts">// Single-effect form
-function watch&lt;F extends () =&gt; unknown&gt;(
+declare function watch&lt;F extends () =&gt; unknown&gt;(
   effect: F
 ): [returnValue: ReturnType&lt;F&gt;, stop: () =&gt; void]
 
 // Getter + afterEffect form
-function watch&lt;F extends () =&gt; unknown, A extends (arg: ReturnType&lt;F&gt;) =&gt; unknown&gt;(
+declare function watch&lt;F extends () =&gt; unknown, A extends (arg: ReturnType&lt;F&gt;) =&gt; unknown&gt;(
   effect: F,
   afterEffect: A
 ): [returnValue: ReturnType&lt;A&gt;, stop: () =&gt; void]</code></pre>
@@ -206,15 +214,12 @@ export function HtmlApi() {
         >
           Signature
         </h3>
-        <div class="code-block">
-          <pre><code class="language-ts">type ArrowTemplate = unknown
-type ArrowExpression = unknown
+        ${TsCodeBlock(`import type { ArrowExpression, ArrowTemplate } from '@arrow-js/core'
 
-function html(
-  strings: TemplateStringsArray,
+declare function html(
+  strings: TemplateStringsArray | string[],
   ...expSlots: ArrowExpression[]
-): ArrowTemplate</code></pre>
-        </div>
+): ArrowTemplate`)}
 
         <h3
           class="text-lg font-semibold text-zinc-900 dark:text-white pt-4"
@@ -345,52 +350,43 @@ export function ComponentApi() {
         >
           Signatures
         </h3>
-        <div class="code-block">
-          <pre><code class="language-ts">type ArrowTemplate = unknown
-type ReactiveTarget = Record&lt;PropertyKey, unknown&gt; | unknown[]
-type Props&lt;T extends ReactiveTarget&gt; = T
-type AsyncComponentOptions&lt;TProps, TValue, TSnapshot = TValue&gt; = unknown
-type Component = unknown
-type ComponentWithProps&lt;T&gt; = unknown
+        ${TsCodeBlock(`import type {
+  ArrowTemplate,
+  AsyncComponentOptions,
+  Component,
+  ComponentWithProps,
+  Props,
+  ReactiveTarget,
+} from '@arrow-js/core'
 
 // Sync — no props
-function component(
+declare function component(
   factory: () =&gt; ArrowTemplate
 ): Component
 
 // Sync — with props
-function component&lt;T extends ReactiveTarget&gt;(
+declare function component&lt;T extends ReactiveTarget&gt;(
   factory: (props: Props&lt;T&gt;) =&gt; ArrowTemplate
 ): ComponentWithProps&lt;T&gt;
 
 // Async — no props
-function component&lt;TValue, TSnapshot = TValue&gt;(
+declare function component&lt;TValue, TSnapshot = TValue&gt;(
   factory: () =&gt; Promise&lt;TValue&gt; | TValue,
   options?: AsyncComponentOptions&lt;ReactiveTarget, TValue, TSnapshot&gt;
 ): Component
 
 // Async — with props
-function component&lt;T extends ReactiveTarget, TValue, TSnapshot = TValue&gt;(
+declare function component&lt;T extends ReactiveTarget, TValue, TSnapshot = TValue&gt;(
   factory: (props: Props&lt;T&gt;) =&gt; Promise&lt;TValue&gt; | TValue,
   options?: AsyncComponentOptions&lt;T, TValue, TSnapshot&gt;
-): ComponentWithProps&lt;T&gt;</code></pre>
-        </div>
+): ComponentWithProps&lt;T&gt;`)}
 
         <h3
           class="text-lg font-semibold text-zinc-900 dark:text-white pt-4"
         >
           AsyncComponentOptions
         </h3>
-        <div class="code-block">
-          <pre><code class="language-ts">interface AsyncComponentOptions&lt;TProps, TValue, TSnapshot = TValue&gt; {
-  fallback?: unknown                                       // shown while pending
-  render?: (value: TValue, props: Props&lt;TProps&gt;) =&gt; unknown  // custom render
-  onError?: (error: unknown, props: Props&lt;TProps&gt;) =&gt; unknown // error handler
-  serialize?: (value: TValue, props: Props&lt;TProps&gt;) =&gt; TSnapshot   // SSR snapshot
-  deserialize?: (snapshot: TSnapshot, props: Props&lt;TProps&gt;) =&gt; TValue // restore
-  idPrefix?: string                                        // readable SSR ids
-}</code></pre>
-        </div>
+        ${TsCodeBlock(`import type { AsyncComponentOptions } from '@arrow-js/core'`)}
 
         <h3
           class="text-lg font-semibold text-zinc-900 dark:text-white pt-4"
@@ -470,12 +466,12 @@ export function PickApi() {
           Signatures
         </h3>
         <div class="code-block">
-          <pre><code class="language-ts">function pick&lt;T extends object, K extends keyof T&gt;(
+          <pre><code class="language-ts">declare function pick&lt;T extends object, K extends keyof T&gt;(
   source: T,
   ...keys: K[]
 ): Pick&lt;T, K&gt;
 
-function pick&lt;T extends object&gt;(source: T): T
+declare function pick&lt;T extends object&gt;(source: T): T
 
 const props = pick  // alias</code></pre>
         </div>
@@ -529,7 +525,7 @@ export function NextTickApi() {
           Signature
         </h3>
         <div class="code-block">
-          <pre><code class="language-ts">function nextTick(fn?: CallableFunction): Promise&lt;unknown&gt;</code></pre>
+          <pre><code class="language-ts">declare function nextTick(fn?: CallableFunction): Promise&lt;unknown&gt;</code></pre>
         </div>
 
         <h3
@@ -583,45 +579,27 @@ export function RenderApi() {
         >
           Signature
         </h3>
-        <div class="code-block">
-          <pre><code class="language-ts">function render(
+        ${TsCodeBlock(`import type { RenderOptions, RenderResult } from '@arrow-js/framework'
+
+declare function render(
   root: ParentNode,
   view: unknown,
   options?: RenderOptions
-): Promise&lt;RenderResult&gt;</code></pre>
-        </div>
+): Promise&lt;RenderResult&gt;`)}
 
         <h3
           class="text-lg font-semibold text-zinc-900 dark:text-white pt-4"
         >
           RenderOptions
         </h3>
-        <div class="code-block">
-          <pre><code class="language-ts">interface RenderOptions {
-  clear?: boolean                              // clear root before rendering
-  hydrationSnapshots?: Record&lt;string, unknown&gt; // pre-loaded async snapshots
-}</code></pre>
-        </div>
+        ${TsCodeBlock(`import type { RenderOptions } from '@arrow-js/framework'`)}
 
         <h3
           class="text-lg font-semibold text-zinc-900 dark:text-white pt-4"
         >
           RenderResult
         </h3>
-        <div class="code-block">
-          <pre><code class="language-ts">type ArrowTemplate = unknown
-
-interface RenderResult {
-  root: ParentNode
-  template: ArrowTemplate
-  payload: RenderPayload
-}
-
-interface RenderPayload {
-  async: Record&lt;string, unknown&gt;  // serialized async component results
-  boundaries: string[]             // boundary ids encountered
-}</code></pre>
-        </div>
+        ${TsCodeBlock(`import type { RenderPayload, RenderResult } from '@arrow-js/framework'`)}
 
         <h3
           class="text-lg font-semibold text-zinc-900 dark:text-white pt-4"
@@ -659,18 +637,13 @@ export function BoundaryApi() {
         >
           Signature
         </h3>
-        <div class="code-block">
-          <pre><code class="language-ts">type ArrowTemplate = unknown
+        ${TsCodeBlock(`import type { ArrowTemplate } from '@arrow-js/core'
+import type { BoundaryOptions } from '@arrow-js/framework'
 
-function boundary(
+declare function boundary(
   view: unknown,
   options?: BoundaryOptions
-): ArrowTemplate
-
-interface BoundaryOptions {
-  idPrefix?: string  // readable identifier for the boundary
-}</code></pre>
-        </div>
+): ArrowTemplate`)}
 
         <h3
           class="text-lg font-semibold text-zinc-900 dark:text-white pt-4"
@@ -729,11 +702,9 @@ export function ToTemplateApi() {
         >
           Signature
         </h3>
-        <div class="code-block">
-          <pre><code class="language-ts">type ArrowTemplate = unknown
+        ${TsCodeBlock(`import type { ArrowTemplate } from '@arrow-js/core'
 
-function toTemplate(view: unknown): ArrowTemplate</code></pre>
-        </div>
+declare function toTemplate(view: unknown): ArrowTemplate`)}
 
         <h3
           class="text-lg font-semibold text-zinc-900 dark:text-white pt-4"
@@ -774,18 +745,12 @@ export function RenderDocumentApi() {
         >
           Signature
         </h3>
-        <div class="code-block">
-          <pre><code class="language-ts">function renderDocument(
+        ${TsCodeBlock(`import type { DocumentRenderParts } from '@arrow-js/framework'
+
+declare function renderDocument(
   template: string,
   parts: DocumentRenderParts
-): string
-
-interface DocumentRenderParts {
-  head?: string       // injected at &lt;!--app-head--&gt;
-  html: string        // injected at &lt;!--app-html--&gt;
-  payloadScript?: string  // injected at &lt;!--app-payload--&gt;
-}</code></pre>
-        </div>
+): string`)}
 
         <h3
           class="text-lg font-semibold text-zinc-900 dark:text-white pt-4"
@@ -825,28 +790,16 @@ export function RenderToStringApi() {
         >
           Signature
         </h3>
-        <div class="code-block">
-          <pre><code class="language-ts">function renderToString(
+        ${TsCodeBlock(`import type {
+  HydrationPayload,
+  SsrRenderOptions,
+  SsrRenderResult,
+} from '@arrow-js/ssr'
+
+declare function renderToString(
   view: unknown,
   options?: SsrRenderOptions
-): Promise&lt;SsrRenderResult&gt;
-
-interface SsrRenderOptions {
-  rootId?: string  // id attribute for the root container
-}
-
-interface SsrRenderResult {
-  html: string
-  payload: HydrationPayload
-}
-
-interface HydrationPayload {
-  html?: string
-  rootId?: string
-  async?: Record&lt;string, unknown&gt;   // serialized async component results
-  boundaries?: string[]              // boundary ids
-}</code></pre>
-        </div>
+): Promise&lt;SsrRenderResult&gt;`)}
 
         <h3
           class="text-lg font-semibold text-zinc-900 dark:text-white pt-4"
@@ -893,7 +846,7 @@ export function SerializePayloadApi() {
           Signature
         </h3>
         <div class="code-block">
-          <pre><code class="language-ts">function serializePayload(
+          <pre><code class="language-ts">declare function serializePayload(
   payload: unknown,
   id?: string  // default: 'arrow-ssr-payload'
 ): string</code></pre>
@@ -952,52 +905,35 @@ export function HydrateApi() {
         >
           Signature
         </h3>
-        <div class="code-block">
-          <pre><code class="language-ts">function hydrate(
+        ${TsCodeBlock(`import type {
+  HydrationOptions,
+  HydrationPayload,
+  HydrationResult,
+} from '@arrow-js/hydrate'
+
+declare function hydrate(
   root: ParentNode,
   view: unknown,
   payload?: HydrationPayload,
   options?: HydrationOptions
-): Promise&lt;HydrationResult&gt;</code></pre>
-        </div>
+): Promise&lt;HydrationResult&gt;`)}
 
         <h3
           class="text-lg font-semibold text-zinc-900 dark:text-white pt-4"
         >
           HydrationOptions
         </h3>
-        <div class="code-block">
-          <pre><code class="language-ts">interface HydrationOptions {
-  onMismatch?: (details: HydrationMismatchDetails) =&gt; void
-}
-
-interface HydrationMismatchDetails {
-  actual: string       // server HTML
-  expected: string     // client HTML
-  mismatches: number   // number of differences found
-  repaired: boolean    // true if boundary repair succeeded
-  boundaryFallbacks: number  // boundaries that fell back
-}</code></pre>
-        </div>
+        ${TsCodeBlock(`import type {
+  HydrationMismatchDetails,
+  HydrationOptions,
+} from '@arrow-js/hydrate'`)}
 
         <h3
           class="text-lg font-semibold text-zinc-900 dark:text-white pt-4"
         >
           HydrationResult
         </h3>
-        <div class="code-block">
-          <pre><code class="language-ts">type ArrowTemplate = unknown
-type RenderPayload = unknown
-
-interface HydrationResult {
-  root: ParentNode
-  template: ArrowTemplate
-  payload: RenderPayload
-  adopted: boolean           // true if DOM was adopted without replacement
-  mismatches: number         // total mismatches encountered
-  boundaryFallbacks: number  // boundaries that required fallback
-}</code></pre>
-        </div>
+        ${TsCodeBlock(`import type { HydrationResult } from '@arrow-js/hydrate'`)}
 
         <h3
           class="text-lg font-semibold text-zinc-900 dark:text-white pt-4"
@@ -1050,7 +986,7 @@ export function ReadPayloadApi() {
           Signature
         </h3>
         <div class="code-block">
-          <pre><code class="language-ts">function readPayload(
+          <pre><code class="language-ts">declare function readPayload(
   doc?: Document,  // default: document
   id?: string      // default: 'arrow-ssr-payload'
 ): HydrationPayload</code></pre>
@@ -1097,138 +1033,28 @@ export function TypesReference() {
         >
           @arrow-js/core
         </h3>
-        <div class="code-block">
-          <pre><code class="language-ts">type ArrowTemplateKey = string | number | undefined
-type ReactiveTarget = Record&lt;PropertyKey, unknown&gt; | unknown[]
-type PropertyObserver&lt;T&gt; = (newValue?: T, oldValue?: T) =&gt; void
-
-interface ComponentCall {
-  key(key: ArrowTemplateKey): ComponentCall
-}
-
-// The template function returned by html\`...\`
-interface ArrowTemplate {
-  (parent: ParentNode): ParentNode
-  (): DocumentFragment
-  isT: boolean
-  key(key: ArrowTemplateKey): ArrowTemplate
-}
-
-// Reactive proxy — the object plus $on/$off methods
-type Reactive&lt;T extends ReactiveTarget&gt; = T &amp; {
-  $on&lt;K extends keyof T&gt;(
-    property: K,
-    observer: PropertyObserver&lt;T[K]&gt;
-  ): void
-  $off&lt;K extends keyof T&gt;(
-    property: K,
-    observer: PropertyObserver&lt;T[K]&gt;
-  ): void
-}
-
-// Computed value wrapper
-type Computed&lt;T&gt; = Readonly&lt;Reactive&lt;{ value: T }&gt;&gt;
-
-// Component prop types
-type Props&lt;T extends ReactiveTarget&gt; = T
-
-// Component types
-interface Component {
-  (): ComponentCall
-}
-interface ComponentWithProps&lt;T extends ReactiveTarget&gt; {
-  &lt;S extends Props&lt;T&gt;&gt;(props: S): ComponentCall
-}</code></pre>
-        </div>
+        ${TsCodeBlock(coreTypeReferenceSnippet)}
 
         <h3
           class="text-lg font-semibold text-zinc-900 dark:text-white pt-4"
         >
           @arrow-js/framework
         </h3>
-        <div class="code-block">
-          <pre><code class="language-ts">type ArrowTemplate = unknown
-
-interface RenderOptions {
-  clear?: boolean
-  hydrationSnapshots?: Record&lt;string, unknown&gt;
-}
-
-interface RenderResult {
-  root: ParentNode
-  template: ArrowTemplate
-  payload: RenderPayload
-}
-
-interface RenderPayload {
-  async: Record&lt;string, unknown&gt;
-  boundaries: string[]
-}
-
-interface BoundaryOptions {
-  idPrefix?: string
-}
-
-interface DocumentRenderParts {
-  head?: string
-  html: string
-  payloadScript?: string
-}</code></pre>
-        </div>
+        ${TsCodeBlock(frameworkTypeReferenceSnippet)}
 
         <h3
           class="text-lg font-semibold text-zinc-900 dark:text-white pt-4"
         >
           @arrow-js/ssr
         </h3>
-        <div class="code-block">
-          <pre><code class="language-ts">interface SsrRenderOptions {
-  rootId?: string
-}
-
-interface SsrRenderResult {
-  html: string
-  payload: HydrationPayload
-}
-
-interface HydrationPayload {
-  html?: string
-  rootId?: string
-  async?: Record&lt;string, unknown&gt;
-  boundaries?: string[]
-}</code></pre>
-        </div>
+        ${TsCodeBlock(ssrTypeReferenceSnippet)}
 
         <h3
           class="text-lg font-semibold text-zinc-900 dark:text-white pt-4"
         >
           @arrow-js/hydrate
         </h3>
-        <div class="code-block">
-          <pre><code class="language-ts">type ArrowTemplate = unknown
-type RenderPayload = unknown
-
-interface HydrationOptions {
-  onMismatch?: (details: HydrationMismatchDetails) =&gt; void
-}
-
-interface HydrationMismatchDetails {
-  actual: string
-  expected: string
-  mismatches: number
-  repaired: boolean
-  boundaryFallbacks: number
-}
-
-interface HydrationResult {
-  root: ParentNode
-  template: ArrowTemplate
-  payload: RenderPayload
-  adopted: boolean
-  mismatches: number
-  boundaryFallbacks: number
-}</code></pre>
-        </div>
+        ${TsCodeBlock(hydrateTypeReferenceSnippet)}
       </div>
     </section>
   `

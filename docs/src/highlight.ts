@@ -86,6 +86,30 @@ function trimCodeWhitespace(wrapper: HTMLElement) {
   ) {
     code.removeChild(code.lastChild)
   }
+
+  trimRenderedCodeLines(code)
+}
+
+function trimRenderedCodeLines(code: HTMLElement) {
+  while (isBlankCodeLine(code.firstElementChild)) {
+    const nextSibling = code.firstElementChild?.nextSibling
+    code.firstElementChild?.remove()
+    if (nextSibling?.nodeType === Node.TEXT_NODE && nextSibling.textContent === '\n') {
+      nextSibling.remove()
+    }
+  }
+
+  while (isBlankCodeLine(code.lastElementChild)) {
+    const previousSibling = code.lastElementChild?.previousSibling
+    code.lastElementChild?.remove()
+    if (previousSibling?.nodeType === Node.TEXT_NODE && previousSibling.textContent === '\n') {
+      previousSibling.remove()
+    }
+  }
+}
+
+function isBlankCodeLine(node: Element | null) {
+  return !!node?.classList.contains('line') && !(node.textContent || '').trim()
 }
 
 function stripTwoslashReferenceLine(html: string) {
@@ -267,7 +291,6 @@ function renderCodeBlock(
 
     return stripTwoslashReferenceLine(html)
   } catch (error) {
-    console.error('Arrow docs Twoslash render failed.', error)
     return highlighter.codeToHtml(code, options)
   }
 }
@@ -279,9 +302,10 @@ export default async function highlight() {
 
   codeBlocks.forEach((block) => {
     const lang = normalizeLanguage(block.className)
-    const code = block.textContent || ''
     const pre = block.parentElement
     const codeBlock = pre?.closest('.code-block')
+    const encodedSource = block.getAttribute('data-code-source')
+    const code = encodedSource ? decodeURIComponent(encodedSource) : block.textContent || ''
     const enableTwoslash =
       !block.closest('[data-disable-twoslash="true"]')
     const html = renderCodeBlock(

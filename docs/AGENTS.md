@@ -48,6 +48,56 @@ Short aliases exist but prefer the full names for readability:
 - `watch` / `w` — watcher
 - `component` / `c` — component wrapper
 
+## TypeScript Example Authoring
+
+The docs site uses Shiki + Twoslash in the browser. That means docs examples do
+not run against the repo's normal workspace module resolution by default. The
+docs sandbox is configured in:
+
+- `docs/src/highlight.ts`
+- `docs/play/arrow-types.d.ts`
+- `docs/src/components/TsCodeBlock.ts`
+
+Follow these rules when adding or editing TypeScript examples:
+
+1. Prefer real exported package types.
+   Use actual public exports from `@arrow-js/core`, `@arrow-js/framework`,
+   `@arrow-js/ssr`, and `@arrow-js/hydrate` whenever possible. Do not show
+   placeholder aliases like `type Foo = unknown` in visible docs code.
+
+2. Use `TsCodeBlock()` for partial examples.
+   If the visible snippet omits setup, imports, or helper declarations, wrap the
+   example with `TsCodeBlock()` and hide the extra context with:
+   - `// ---cut-start---`
+   - `// ---cut-end---`
+   - `// ---cut-before---`
+   - `// ---cut-after---`
+
+3. Keep hidden context minimal.
+   Hide only the scaffolding required to make the snippet a valid standalone
+   Twoslash program. Do not hide the actual API being documented.
+
+4. Do not hand-write public package types in docs examples.
+   If a docs example needs a type, import the official exported type directly.
+   If the package does not export the type cleanly enough for docs usage, export
+   it from the package first instead of recreating it in the docs.
+
+5. For type reference sections, show official declaration excerpts instead of
+   import-only lists.
+   If readers need to understand the shape of a type, render the declaration
+   excerpt sourced from the package code or emitted type declarations, not just
+   `import type { ... }` lines.
+
+6. Keep `arrow-types.d.ts` thin.
+   That file should primarily mirror real package exports plus a small amount of
+   docs-only support code, such as local fake modules like `./App` or helper
+   assertion utilities. Do not turn it into a second source of truth for public
+   API types.
+
+7. If a snippet imports a local example module, wire it into Twoslash.
+   Add the file content to the `fsMap` in `docs/src/highlight.ts` so imports
+   like `./App` resolve inside the browser Twoslash sandbox.
+
 ---
 
 ## Core API reference

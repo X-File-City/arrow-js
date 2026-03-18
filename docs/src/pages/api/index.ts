@@ -69,10 +69,7 @@ export function ApiPage() {
       <div class="max-w-7xl mx-auto px-6 pt-8 pb-12">
         <div class="flex gap-12">
           ${nav.sidebar()}
-          <article
-            class="min-w-0 max-w-3xl flex-1"
-            data-disable-twoslash="true"
-          >
+          <article class="min-w-0 max-w-3xl flex-1">
             <div class="flex items-start justify-between gap-4 mb-8">
               <h1
                 class="text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-white"

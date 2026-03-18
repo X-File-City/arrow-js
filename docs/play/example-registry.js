@@ -84,6 +84,31 @@ export const playgroundExamples = [
     'FeedCard.ts',
     'styles.css',
   ]),
+  createExampleFromDir('table', [
+    ENTRY_FILE,
+    'TableApp.ts',
+    'TableRow.ts',
+    'styles.css',
+  ]),
+  createExampleFromDir('tabs', [
+    ENTRY_FILE,
+    'TabsApp.ts',
+    'TabPanel.ts',
+    'styles.css',
+  ]),
+  createExampleFromDir('gallery', [
+    ENTRY_FILE,
+    'GalleryApp.ts',
+    'Lightbox.ts',
+    'styles.css',
+  ]),
+  createExampleFromDir('runner', [
+    ENTRY_FILE,
+    'RunnerApp.ts',
+    'ScoreBoard.ts',
+    'engine.ts',
+    'styles.css',
+  ]),
 ]
 
 const exampleById = new Map(playgroundExamples.map((example) => [example.id, example]))

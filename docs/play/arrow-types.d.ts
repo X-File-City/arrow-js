@@ -1,4 +1,21 @@
 declare module '@arrow-js/core' {
+  export type ArrowTemplateKey = string | number | undefined
+  export type ParentNode = Node | DocumentFragment
+  export type ArrowRenderable =
+    | string
+    | number
+    | boolean
+    | null
+    | undefined
+    | ComponentCall
+    | ArrowTemplate
+    | Array<string | number | boolean | ComponentCall | ArrowTemplate>
+  export type ArrowExpression =
+    | ArrowRenderable
+    | ((...args: unknown[]) => ArrowRenderable)
+    | EventListener
+    | ((evt: InputEvent) => void)
+
   export type ReactiveTarget = Record<PropertyKey, unknown> | unknown[]
 
   export interface ArrowTemplate {
@@ -24,6 +41,10 @@ declare module '@arrow-js/core' {
       property: P,
       callback: (value?: T[P], oldValue?: T[P]) => void
     ) => void
+  }
+
+  export interface PropertyObserver<T> {
+    (newValue?: T, oldValue?: T): void
   }
 
   export type Props<T extends ReactiveTarget> = {
@@ -127,12 +148,20 @@ declare module '@arrow-js/framework' {
     payload: RenderPayload
   }
 
+  export interface DocumentRenderParts {
+    head?: string
+    html: string
+    payloadScript?: string
+  }
+
   export function boundary(view: unknown, options?: BoundaryOptions): ArrowTemplate
   export function render(
     root: ParentNode,
     view: unknown,
     options?: RenderOptions
   ): Promise<RenderResult>
+  export function toTemplate(view: unknown): ArrowTemplate
+  export function renderDocument(template: string, parts: DocumentRenderParts): string
 }
 
 declare module '@arrow-js/ssr' {
@@ -201,3 +230,78 @@ declare module '@arrow-js/hydrate' {
 
   export function readPayload(doc?: Document, id?: string): HydrationPayload
 }
+
+declare module './App' {
+  import type { ArrowTemplate } from '@arrow-js/core'
+
+  export function createApp(): ArrowTemplate
+}
+
+declare module './app' {
+  import type { ArrowTemplate } from '@arrow-js/core'
+
+  export function createApp(): ArrowTemplate
+}
+
+type ArrowTemplate = import('@arrow-js/core').ArrowTemplate
+type ReactiveTarget = import('@arrow-js/core').ReactiveTarget
+type Reactive<T extends ReactiveTarget> = import('@arrow-js/core').Reactive<T>
+type Computed<T> = import('@arrow-js/core').Computed<T>
+type Props<T extends ReactiveTarget> = import('@arrow-js/core').Props<T>
+type ArrowTemplateKey = import('@arrow-js/core').ArrowTemplateKey
+type PropertyObserver<T> = import('@arrow-js/core').PropertyObserver<T>
+type RenderOptions = import('@arrow-js/framework').RenderOptions
+type RenderPayload = import('@arrow-js/framework').RenderPayload
+type RenderResult = import('@arrow-js/framework').RenderResult
+type BoundaryOptions = import('@arrow-js/framework').BoundaryOptions
+type DocumentRenderParts = import('@arrow-js/framework').DocumentRenderParts
+type HydrationPayload = import('@arrow-js/hydrate').HydrationPayload
+type HydrationMismatchDetails = import('@arrow-js/hydrate').HydrationMismatchDetails
+type HydrationOptions = import('@arrow-js/hydrate').HydrationOptions
+type HydrationResult = import('@arrow-js/hydrate').HydrationResult
+type SsrRenderOptions = import('@arrow-js/ssr').SsrRenderOptions
+type SsrRenderResult = import('@arrow-js/ssr').SsrRenderResult
+
+declare const html: typeof import('@arrow-js/core').html
+declare const reactive: typeof import('@arrow-js/core').reactive
+declare const watch: typeof import('@arrow-js/core').watch
+declare const nextTick: typeof import('@arrow-js/core').nextTick
+declare const component: typeof import('@arrow-js/core').component
+declare const pick: typeof import('@arrow-js/core').pick
+declare const props: typeof import('@arrow-js/core').props
+declare const render: typeof import('@arrow-js/framework').render
+declare const boundary: typeof import('@arrow-js/framework').boundary
+declare const toTemplate: typeof import('@arrow-js/framework').toTemplate
+declare const renderDocument: typeof import('@arrow-js/framework').renderDocument
+declare const renderToString: typeof import('@arrow-js/ssr').renderToString
+declare const serializePayload: typeof import('@arrow-js/ssr').serializePayload
+declare const hydrate: typeof import('@arrow-js/hydrate').hydrate
+declare const readPayload: typeof import('@arrow-js/hydrate').readPayload
+
+declare const cls: string
+declare const data: {
+  active: boolean
+  boundaries: string[]
+  count: number
+  list: string[]
+  loading: boolean
+  logTotal: boolean
+  price: number
+  quantity: number
+  text: string
+  user: { last: string }
+}
+declare const items: Array<{ id: string | number; label: string; name: string }>
+declare const someString: string
+declare const otherTemplate: ArrowTemplate
+declare const view: unknown
+declare const callback: PropertyObserver<unknown>
+declare function handleClick(event: Event): void
+declare function MyComponent(props: { label: string }): unknown
+declare function Counter(props: { count: number }): unknown
+declare function Sidebar(): unknown
+declare function Content(): unknown
+declare function ItemCard(props: { id: string | number; name: string }): {
+  key(key: string | number | undefined): unknown
+}
+declare function createApp(): unknown

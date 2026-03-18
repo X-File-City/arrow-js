@@ -1,0 +1,208 @@
+.tabs {
+  --bg: #fff;
+  --text: #1a1a1a;
+  --muted: #666;
+  --surface: #f8f8fa;
+  --border: #e4e4e7;
+  --accent: #6366f1;
+  --tab-hover: #f0f0f5;
+  --code-bg: #f4f4f8;
+
+  min-height: 100vh;
+  padding: 56px 24px;
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.5 -apple-system, 'IBM Plex Sans', system-ui, sans-serif;
+}
+
+html[data-theme='dark'] .tabs {
+  --bg: #18181b;
+  --text: #e4e4e7;
+  --muted: #71717a;
+  --surface: #27272a;
+  --border: #3f3f46;
+  --accent: #a5b4fc;
+  --tab-hover: #2a2a30;
+  --code-bg: #1e1e22;
+}
+
+.tabs-header { max-width: 600px; margin: 0 auto 32px; }
+.tabs-header h1 { margin: 0 0 6px; font-size: 28px; font-weight: 700; }
+.tabs-subtitle { margin: 0; color: var(--muted); }
+
+.tabs-container {
+  max-width: 600px;
+  margin: 0 auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.tab-bar {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.tab-trigger {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 14px 12px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  position: relative;
+  transition: color 150ms, background 150ms;
+}
+
+.tab-trigger:hover {
+  color: var(--text);
+  background: var(--tab-hover);
+}
+
+.tab-trigger::after {
+  content: '';
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 0;
+  height: 2px;
+  background: transparent;
+  border-radius: 2px 2px 0 0;
+  transition: background 200ms;
+}
+
+.tab-trigger[aria-selected='true'] {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.tab-trigger[aria-selected='true']::after {
+  background: var(--accent);
+}
+
+.tab-icon { font-size: 15px; line-height: 1; }
+.tab-panels { padding: 24px; }
+
+.tab-panel {
+  display: none;
+  animation: panelIn 200ms ease;
+}
+
+.tab-panel[data-active='true'] {
+  display: block;
+}
+
+@keyframes panelIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.panel-intro {
+  margin: 0 0 16px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.feature-card {
+  display: flex;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.feature-card strong { display: block; margin-bottom: 4px; font-size: 15px; }
+.feature-card p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
+.feature-card-icon { font-size: 22px; line-height: 1; flex-shrink: 0; padding-top: 2px; }
+
+.checklist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.check-item {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.check-item span {
+  color: var(--text);
+  font-weight: 400;
+  font-size: 15px;
+}
+
+.check-item code {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 13px;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: var(--code-bg);
+}
+
+.code-block {
+  margin: 0;
+  padding: 16px;
+  border-radius: 8px;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  overflow-x: auto;
+}
+
+.code-block code {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text);
+}
+
+.menu-list,
+.hours-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-item,
+.hours-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 15px;
+}
+
+.menu-item:last-child,
+.hours-row:last-child {
+  border-bottom: none;
+}
+
+.menu-price {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+}
+
+.hours-list {
+  margin-bottom: 16px;
+}
