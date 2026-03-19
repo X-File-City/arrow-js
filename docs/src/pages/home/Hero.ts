@@ -41,13 +41,11 @@ export function Hero() {
           <p
             class="mt-6 text-base text-pretty sm:text-[1.0625rem] text-zinc-600 dark:text-zinc-400 leading-relaxed"
           >
-            ArrowJS is a tiny, blazing-fast, type-safe framework with <span
-              class="font-semibold text-arrow-500"
-            >5 KB</span>, zero
-            dependencies, and no build step required. <br /><br />
-            Sandbox untrusted component logic in a Web Worker or WebAssembly
-            sandbox while rendering full interactive DOM directly in your app,
-            not inside an iframe.<br /><br />
+            A tiny, blazing-fast, zero dependency, type-safe framework with no
+            build step required. <br /><br />
+            ArrowJS ships with the ability to isolate component logic in Web
+            Assembly sandboxes while rendering full inline DOM directly in your
+            app — no iframes.<br /><br />
             Ship safe, flexible, on-demand UIs for your users without having to
             plan components in advance.
           </p>
@@ -55,7 +53,9 @@ export function Hero() {
           <div class="mt-8">${CliCommandIsland()}</div>
         </div>
 
-        <div class="relative w-full flex flex-col lg:translate-x-6 xl:translate-x-10">
+        <div
+          class="relative w-full flex flex-col lg:translate-x-6 xl:translate-x-10"
+        >
           <div id="hero-chat-root" class="flex flex-col flex-1">
             ${HeroChat()}
           </div>
