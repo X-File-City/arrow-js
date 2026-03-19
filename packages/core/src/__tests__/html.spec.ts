@@ -217,6 +217,12 @@ describe('html', () => {
     expect(parent.innerHTML).toMatchSnapshot()
   })
 
+  it('throws a clear error when an expression is placed inside a tag opening', () => {
+    expect(() => html`<div><h1${() => 'broken'}></div>`()).toThrow(
+      /invalid HTML position/i
+    )
+  })
+
   it('automatically updates expressions with arrow fn', async () => {
     const data = reactive({ name: 'World' })
     const parent = document.createElement('div')

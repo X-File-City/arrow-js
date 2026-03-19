@@ -199,6 +199,43 @@ function compileDomNode(node: Node): TemplateNodeDescriptor[] {
   }
 }
 
+function collectExpressionIndexes(
+  node: TemplateNodeDescriptor,
+  indexes: Set<number>
+) {
+  switch (node.kind) {
+    case 'fragment':
+      for (const child of node.children) {
+        collectExpressionIndexes(child, indexes)
+      }
+      return
+    case 'element':
+      for (const binding of node.dynamicAttributes) {
+        for (const part of binding.parts) {
+          if (part.kind === 'expr') indexes.add(part.exprIndex)
+        }
+      }
+      for (const binding of node.eventBindings) {
+        indexes.add(binding.exprIndex)
+      }
+      if (node.refBinding) indexes.add(node.refBinding.exprIndex)
+      for (const child of node.children) {
+        collectExpressionIndexes(child, indexes)
+      }
+      return
+    case 'region':
+      indexes.add(node.exprIndex)
+      return
+    case 'text-binding':
+      for (const part of node.parts) {
+        if (part.kind === 'expr') indexes.add(part.exprIndex)
+      }
+      return
+    case 'text':
+      return
+  }
+}
+
 export function compileTemplateDescriptor(
   templateId: string,
   strings: string[]
@@ -220,6 +257,18 @@ export function compileTemplateDescriptor(
   const rootCandidates = Array.from(template.content.childNodes)
     .flatMap((node) => compileDomNode(node))
     .filter((node) => !(node.kind === 'text' && !node.value.trim()))
+
+  const usedExpressionIndexes = new Set<number>()
+  for (const candidate of rootCandidates) {
+    collectExpressionIndexes(candidate, usedExpressionIndexes)
+  }
+  for (let i = 0; i < strings.length - 1; i++) {
+    if (!usedExpressionIndexes.has(i)) {
+      throw new SandboxCompileError(
+        'Arrow sandbox template expression was placed in an invalid HTML position. Expressions must appear in text content, node positions, or attribute values.'
+      )
+    }
+  }
 
   return {
     id: templateId,

@@ -68,6 +68,24 @@ describe('@arrow-js/highlight', () => {
     ])
   })
 
+  it('does not hang on malformed tag openings with interpolations', () => {
+    const source =
+      'const view = html`<div><h1${() => value.val}${sandbox(data)}</div>`'
+
+    const tokens = tokenizeArrowHtmlTemplates(source)
+    const rendered = tokens.map((token) => [token.type, source.slice(token.start, token.end)])
+
+    expect(rendered).toEqual(
+      expect.arrayContaining([
+        ['delimiter', '<'],
+        ['tag', 'div'],
+        ['delimiter', '</'],
+        ['tag', 'div'],
+        ['delimiter', '>'],
+      ])
+    )
+  })
+
   it('decorates rendered code while skipping Twoslash popup content', () => {
     const source = 'const view = html`<div>${name}</div>`'
     const code = document.createElement('code')

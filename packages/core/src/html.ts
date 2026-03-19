@@ -206,11 +206,18 @@ function resolveChunkProto(rawStrings: TemplateStringsArray | string[]): ChunkPr
 
   const template = document.createElement('template')
   template.innerHTML = signature
+  const paths = createPaths(template.content)
+  const expressions = rawStrings.length - 1
+  if (countBindingPaths(paths[0]) !== expressions) {
+    throw new Error(
+      'Arrow template expression was placed in an invalid HTML position. Expressions must appear in text content, node positions, or attribute values.'
+    )
+  }
   const created = {
     template,
-    paths: createPaths(template.content),
+    paths,
     signature,
-    expressions: rawStrings.length - 1,
+    expressions,
   }
   chunkMemoByRef.set(rawStrings, created)
   chunkMemo[signature] = created
@@ -1083,4 +1090,14 @@ function createPaths(dom: DocumentFragment): Chunk['paths'] {
     path.pop()
   }
   return [pathTape, attrNames]
+}
+
+function countBindingPaths(pathTape: number[]) {
+  let count = 0
+  for (let i = 0; i < pathTape.length;) {
+    const remaining = pathTape[i + 1] ?? 0
+    i += remaining + 3
+    count++
+  }
+  return count
 }

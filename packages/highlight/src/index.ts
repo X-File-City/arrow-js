@@ -365,9 +365,17 @@ export function tokenizeArrowHtmlSegment(segment: string, offset = 0) {
         break
       }
 
+      if (segment[cursor] === '<') {
+        break
+      }
+
       const attrStart = cursor
       while (cursor < segment.length && !/[\s=>/]/.test(segment[cursor])) {
         cursor++
+      }
+      if (cursor === attrStart) {
+        cursor++
+        continue
       }
       push(attrStart, cursor, 'attr-name')
 
@@ -592,6 +600,12 @@ function tokenizeTaggedTemplate(
       continue
     }
 
+    if (source[i] === '<') {
+      mode = 'data'
+      contentStart = i
+      continue
+    }
+
     const attrStart = i
     while (
       i < source.length &&
@@ -600,6 +614,10 @@ function tokenizeTaggedTemplate(
       !/[\s=>/]/.test(source[i])
     ) {
       i++
+    }
+    if (i === attrStart) {
+      i++
+      continue
     }
     push(attrStart, i, 'attr-name')
 

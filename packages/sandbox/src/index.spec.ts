@@ -1086,6 +1086,20 @@ describe('@arrow-js/sandbox', () => {
     expect(onError).not.toHaveBeenCalled()
   })
 
+  it('rejects sandbox templates with expressions in invalid HTML positions', async () => {
+    const root = document.createElement('div')
+
+    await expect(
+      sandbox(
+        `
+          const state = reactive({ title: 'bad' })
+          export default html\`<div><h1\${() => state.title}</div>\`
+        `,
+        root
+      )
+    ).rejects.toThrow(/invalid HTML position/i)
+  })
+
   it('includes location information in runtime errors passed to onError', async () => {
     const root = document.createElement('div')
     const onError = vi.fn()
