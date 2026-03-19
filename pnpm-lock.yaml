@@ -143,6 +143,9 @@ importers:
 
   packages/sandbox:
     dependencies:
+      '@arrow-js/core':
+        specifier: workspace:*
+        version: link:../core
       acorn:
         specifier: ^8.16.0
         version: 8.16.0
