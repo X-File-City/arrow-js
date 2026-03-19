@@ -180,6 +180,7 @@ jobs:
   publish-sandbox:
     needs:
       - prepare
+      - publish-core
     runs-on: ubuntu-latest
     permissions:
       contents: read
