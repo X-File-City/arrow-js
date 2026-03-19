@@ -23,6 +23,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "test:e2e:sandbox": "playwright test -c playwright.sandbox.config.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "install:browsers": "playwright install",
     "benchmark:setup": "node bench/js-framework-benchmark/setup.mjs",

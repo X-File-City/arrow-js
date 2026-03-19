@@ -1,0 +1,42 @@
+{
+  "name": "@arrow-js/sandbox",
+  "version": "1.0.0-alpha.9",
+  "description": "QuickJS/WASM-backed sandbox runtime for executing Arrow templates outside the host window realm.",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/standardagents/arrow-js",
+    "directory": "packages/sandbox"
+  },
+  "homepage": "https://github.com/standardagents/arrow-js#readme",
+  "bugs": {
+    "url": "https://github.com/standardagents/arrow-js/issues"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "src",
+    "build",
+    "demo",
+    "README.md",
+    "LICENSE.txt",
+    "arrow-logo.png"
+  ],
+  "scripts": {
+    "demo": "vite --config demo/vite.config.ts",
+    "demo:build": "vite build --config demo/vite.config.ts",
+    "sync:vm": "node build/sync-vm-sources.mjs"
+  },
+  "dependencies": {
+    "acorn": "^8.16.0",
+    "acorn-walk": "^8.3.4",
+    "magic-string": "^0.30.21",
+    "quickjs-emscripten": "^0.32.0",
+    "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "vite": "^8.0.0"
+  }
+}

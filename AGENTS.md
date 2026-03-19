@@ -60,6 +60,7 @@ The automated release flow syncs and publishes:
 - `@arrow-js/framework`
 - `@arrow-js/highlight`
 - `@arrow-js/hydrate`
+- `@arrow-js/sandbox`
 - `@arrow-js/ssr`
 - `@arrow-js/vite-plugin-arrow`
 - `@arrow-js/skill`

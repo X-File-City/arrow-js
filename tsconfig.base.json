@@ -23,6 +23,7 @@
       "@arrow-js/ssr": ["packages/ssr/src/index.ts"],
       "@arrow-js/hydrate": ["packages/hydrate/src/index.ts"],
       "@arrow-js/highlight": ["packages/highlight/src/index.ts"],
+      "@arrow-js/sandbox": ["packages/sandbox/src/index.ts"],
       "@arrow-js/compiler": ["packages/compiler/src/index.ts"],
       "@arrow-js/vite-plugin-arrow": ["packages/vite-plugin-arrow/src/index.js"]
     }

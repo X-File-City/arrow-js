@@ -15,6 +15,7 @@ const releasablePackages = [
   'packages/framework',
   'packages/highlight',
   'packages/hydrate',
+  'packages/sandbox',
   'packages/skill',
   'packages/ssr',
   'packages/vite-plugin-arrow',

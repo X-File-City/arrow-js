@@ -177,6 +177,40 @@ jobs:
           done
           exit 1
 
+  publish-sandbox:
+    needs:
+      - prepare
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'pnpm'
+      - name: Install latest npm
+        run: npm install -g npm@latest
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Sync package versions to tag
+        run: node scripts/release.mjs sync --version "${{ needs.prepare.outputs.version }}"
+      - name: Publish @arrow-js/sandbox
+        working-directory: packages/sandbox
+        shell: bash
+        run: |
+          for attempt in 1 2 3; do
+            pnpm publish --tag "${{ needs.prepare.outputs.npm_tag }}" --access public --no-git-checks && exit 0
+            echo "Attempt $attempt failed, retrying in 10s..."
+            sleep 10
+          done
+          exit 1
+
   publish-framework:
     needs:
       - prepare
@@ -290,6 +324,7 @@ jobs:
       - publish-framework
       - publish-highlight
       - publish-hydrate
+      - publish-sandbox
       - publish-ssr
       - publish-vite-plugin-arrow
       - publish-skill

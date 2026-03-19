@@ -20,6 +20,7 @@ Use `@arrow-js/core` when you want direct reactive DOM updates with minimal API 
 - `@arrow-js/framework`: async component runtime, `boundary()`, `render()`, `toTemplate()`, and document rendering helpers
 - `@arrow-js/ssr`: `renderToString()` and `serializePayload()` for server output
 - `@arrow-js/hydrate`: `hydrate()` and `readPayload()` for adopting SSR output in the browser
+- `@arrow-js/sandbox`: QuickJS/WASM-backed sandbox runtime for executing Arrow code off the host `window` realm while rendering into the real DOM
 - `@arrow-js/vite-plugin-arrow`: Vite integration package included in the monorepo
 
 ## Install
