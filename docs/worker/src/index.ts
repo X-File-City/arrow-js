@@ -10,11 +10,16 @@
 
 export interface Env {
   PLAY_KV: PlayKvNamespace
+  ASSETS?: AssetBinding
 }
 
 interface PlayKvNamespace {
   get(key: string): Promise<string | null>
   put(key: string, value: string): Promise<void>
+}
+
+interface AssetBinding {
+  fetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response>
 }
 
 const HASH_LENGTH = 32
@@ -23,6 +28,13 @@ const CORS_HEADERS = {
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type',
 }
+const HTML_ENTRY_REDIRECTS = new Map([
+  ['/docs', '/'],
+  ['/docs/', '/'],
+  ['/play', '/play/'],
+  ['/play/preview', '/play/preview.html'],
+  ['/play/preview/', '/play/preview.html'],
+])
 
 async function contentHash(data: string): Promise<string> {
   const encoded = new TextEncoder().encode(data)
@@ -70,9 +82,43 @@ async function handleLoad(
   return Response.json({ snapshot }, { headers: CORS_HEADERS })
 }
 
+function redirectHtmlEntry(request: Request): Response | null {
+  if (!isDocumentRequest(request)) {
+    return null
+  }
+
+  const url = new URL(request.url)
+  const targetPath = HTML_ENTRY_REDIRECTS.get(url.pathname)
+  if (!targetPath) {
+    return null
+  }
+
+  url.pathname = targetPath
+  return Response.redirect(url.toString(), 302)
+}
+
+function isDocumentRequest(request: Request) {
+  if (request.method !== 'GET' && request.method !== 'HEAD') {
+    return false
+  }
+
+  const destination = request.headers.get('sec-fetch-dest')
+  if (destination && destination !== 'document' && destination !== 'empty') {
+    return false
+  }
+
+  const accept = request.headers.get('accept') ?? ''
+  return !accept || accept.includes('text/html') || accept.includes('*/*')
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url)
+    const redirect = redirectHtmlEntry(request)
+
+    if (redirect) {
+      return redirect
+    }
 
     if (request.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers: CORS_HEADERS })
@@ -85,6 +131,10 @@ export default {
     const loadMatch = url.pathname.match(/^\/api\/play\/([a-f0-9]+)$/)
     if (request.method === 'GET' && loadMatch) {
       return handleLoad(loadMatch[1], env)
+    }
+
+    if (env.ASSETS) {
+      return env.ASSETS.fetch(request)
     }
 
     return new Response('Not found', { status: 404 })

@@ -72,6 +72,34 @@ export async function renderMarkdown(url: string) {
   return markdown
 }
 
+export async function renderLlms() {
+  const docsMarkdown = await renderMarkdown('/')
+  const apiMarkdown = await renderMarkdown('/api')
+
+  return [
+    '# ArrowJS',
+    '',
+    '> A < 3KB reactive UI runtime with zero dependencies. Observable data, declarative DOM, and SSR built on platform primitives.',
+    '',
+    '## Documentation',
+    '',
+    '- [Docs](/docs.md): Guide-style essentials — what Arrow is, quickstart, components, reactive data, templates, and SSR.',
+    '- [API Reference](/api.md): Signature-focused reference for every export across @arrow-js/core, @arrow-js/framework, @arrow-js/ssr, and @arrow-js/hydrate.',
+    '- [Playground Examples](/play.md): Source code for all interactive playground examples.',
+    '',
+    '---',
+    '',
+    '# Docs',
+    '',
+    docsMarkdown,
+    '---',
+    '',
+    '# API Reference',
+    '',
+    apiMarkdown,
+  ].join('\n')
+}
+
 const langFor: Record<string, string> = {
   '.ts': 'ts',
   '.css': 'css',

@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "node server.mjs",
-    "build": "vite build --app",
+    "build": "vite build --app && node scripts/prerender-static.mjs",
     "preview": "NODE_ENV=production node server.mjs"
   },
   "dependencies": {

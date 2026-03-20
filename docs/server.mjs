@@ -362,12 +362,12 @@ function resolveTextRoute(url) {
 }
 
 async function serveTextRoute(route, request, response) {
-  let renderMarkdown, renderPlayground
+  let renderLlms, renderMarkdown, renderPlayground
 
   if (isProduction) {
-    ;({ renderMarkdown, renderPlayground } = await import(pathToFileURL(serverEntryPath).href))
+    ;({ renderLlms, renderMarkdown, renderPlayground } = await import(pathToFileURL(serverEntryPath).href))
   } else {
-    ;({ renderMarkdown, renderPlayground } = await vite.environments.ssr.runner.import(
+    ;({ renderLlms, renderMarkdown, renderPlayground } = await vite.environments.ssr.runner.import(
       '/src/entry-server.ts'
     ))
   }
@@ -375,30 +375,7 @@ async function serveTextRoute(route, request, response) {
   let body
 
   if (route.render === 'llms') {
-    const docsMarkdown = await renderMarkdown('/')
-    const apiMarkdown = await renderMarkdown('/api')
-    body = [
-      '# ArrowJS',
-      '',
-      '> A < 3KB reactive UI runtime with zero dependencies. Observable data, declarative DOM, and SSR built on platform primitives.',
-      '',
-      '## Documentation',
-      '',
-      '- [Docs](/docs.md): Guide-style essentials — what Arrow is, quickstart, components, reactive data, templates, and SSR.',
-      '- [API Reference](/api.md): Signature-focused reference for every export across @arrow-js/core, @arrow-js/framework, @arrow-js/ssr, and @arrow-js/hydrate.',
-      '- [Playground Examples](/play.md): Source code for all interactive playground examples.',
-      '',
-      '---',
-      '',
-      '# Docs',
-      '',
-      docsMarkdown,
-      '---',
-      '',
-      '# API Reference',
-      '',
-      apiMarkdown,
-    ].join('\n')
+    body = await renderLlms()
   } else if (route.render === 'playground') {
     const reqUrl = new URL(request.url ?? '/', 'http://arrow.local')
     const snapshot = reqUrl.searchParams.get('s') ?? undefined
