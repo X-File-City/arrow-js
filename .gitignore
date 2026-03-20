@@ -3,7 +3,7 @@
 node_modules
 dist
 coverage
-public
+/public
 .cache
 .play-store.json
 .dmux/
