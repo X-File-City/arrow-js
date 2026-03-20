@@ -1,4 +1,6 @@
-# ArrowJS
+<p align="center">
+  <img src="docs/public/arrowjs-logo.png" alt="ArrowJS" width="360" />
+</p>
 
 ![test badge](https://github.com/standardagents/arrow-js/actions/workflows/tests.yml/badge.svg)
 ![size badge](https://img.badgesize.io/https://cdn.jsdelivr.net/npm/@arrow-js/core@latest/dist/index.min.mjs.svg?compression=brotli)
