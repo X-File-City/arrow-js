@@ -26,7 +26,7 @@ let result = await minify(fs.readFileSync(inputFile, 'utf-8'), {
   },
   compress: {
     ecma: '2022',
-    passes: 4,
+    passes: 6,
     pure_getters: true,
     unsafe: true,
     unsafe_arrows: true,
@@ -71,7 +71,7 @@ let iifeResult = await minify(fs.readFileSync(iifeInputFile, 'utf-8'), {
   },
   compress: {
     ecma: '2015',
-    passes: 4,
+    passes: 6,
     pure_getters: true,
     unsafe: true,
     unsafe_arrows: true,

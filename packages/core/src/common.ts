@@ -105,21 +105,11 @@ export function registerCleanup(fn: () => void) {
 
 export function onCleanup(fn: () => void) {
   const collector = cleanupCollector
-  if (!collector) {
-    throw new Error(
-      'onCleanup() can only be used while rendering a component.'
-    )
-  }
+  if (!collector) throw Error('onCleanup needs component')
 
-  let active = true
-  const dispose = () => {
-    if (!active) return
-    active = false
-    const index = collector.indexOf(dispose)
-    if (index > -1) collector.splice(index, 1)
-    fn()
-  }
+  let active = 1
+  const dispose = () =>
+    active-- && (collector.splice(collector.indexOf(dispose), 1), fn())
 
-  collector.push(dispose)
-  return dispose
+  return collector.push(dispose), dispose
 }

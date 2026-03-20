@@ -217,6 +217,43 @@ article :is(p, li) a:not(.copy-menu-item):not(.playground-cta) {
   background: none;
 }
 
+.copyable-snippet {
+  overflow: hidden;
+}
+
+.copyable-snippet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem 0;
+}
+
+.copyable-snippet-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+[data-theme="light"] .copyable-snippet-label {
+  color: #52525b;
+}
+
+[data-theme="dark"] .copyable-snippet-label {
+  color: #a1a1aa;
+}
+
+.copyable-snippet-btn {
+  flex: none;
+}
+
+.copyable-snippet pre {
+  max-height: 20rem;
+  overflow: auto;
+  padding-top: 0.75rem;
+}
+
 [data-theme="light"] :is(.code-block, .hero-code) {
   background: #fafafa;
 }

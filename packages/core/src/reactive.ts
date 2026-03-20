@@ -145,7 +145,7 @@ export function reactive<T extends ReactiveTarget, TValue>(
   // The data is already a reactive object, so return it.
   if (isR(data)) return data as Reactive<T>
   // Only valid objects can be reactive.
-  if (!isO(data)) throw Error('Expected object.')
+  if (!isO(data)) throw Error('Expected object')
   // Create a new slot in the listeners registry and then store the relationship
   // of this object to its index.
   const id = ++index

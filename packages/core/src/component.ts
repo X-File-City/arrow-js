@@ -188,7 +188,7 @@ export function component<
 ): Component<TEvents> | ComponentWithProps<T, TEvents> {
   if (options || factory instanceof AsyncFunction) {
     if (!asyncComponentInstaller) {
-      throw new Error('Async runtime required.')
+      throw Error('Async runtime missing.')
     }
 
     return asyncComponentInstaller(

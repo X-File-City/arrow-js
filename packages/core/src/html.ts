@@ -209,9 +209,7 @@ function resolveChunkProto(rawStrings: TemplateStringsArray | string[]): ChunkPr
   const paths = createPaths(template.content)
   const expressions = rawStrings.length - 1
   if (countBindingPaths(paths[0]) !== expressions) {
-    throw new Error(
-      'Arrow template expression was placed in an invalid HTML position. Expressions must appear in text content, node positions, or attribute values.'
-    )
+    throw Error('Invalid HTML position')
   }
   const created = {
     template,
@@ -306,7 +304,7 @@ function acquireChunk(template: InternalTemplate): Chunk {
   const proto = getChunkProto(template)
   const exact = template._i === undefined ? undefined : staleById.get(template._i)
   if (exact && exact.g !== proto.signature) {
-    throw new Error('Template id shape mismatch.')
+    throw Error('shape mismatch')
   }
   if (exact && exact.g === proto.signature && exact.r) {
     removeStaleChunk(exact)
