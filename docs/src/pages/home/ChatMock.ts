@@ -173,7 +173,7 @@ export function ChatMock() {
           </div>
         </div>
 
-        <div class="p-5 overflow-y-auto overflow-x-visible flex-1 flex flex-col">
+        <div class="p-5 overflow-y-auto overflow-x-visible flex-1 flex flex-col @container">
           <div
             class="${() =>
               'space-y-3 overflow-visible transition-opacity duration-300 ' +
@@ -219,13 +219,13 @@ export function ChatMock() {
                 ? html`
                     <div
                       class="${() =>
-                        'ml-[34px] overflow-visible ' +
+                        '@md:ml-[34px] overflow-visible ' +
                         (st.uiVisible ? 'chat-ui-enter' : 'opacity-0')}"
                     >
                       <div
                         class="rounded-xl border border-zinc-200/80 dark:border-zinc-700/40 bg-zinc-50/80 dark:bg-zinc-800/20 p-4 overflow-visible"
                       >
-                        <div class="overflow-visible">
+                        <div class="overflow-visible @container">
                           ${() => scenarios[st.idx].ui()}
                         </div>
                         <div

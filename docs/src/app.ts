@@ -32,7 +32,7 @@ async function createApiPage(
   const siteUrl = options.baseUrl || defaultSiteUrl
 
   return {
-    title: 'API Reference — Arrow',
+    title: 'API Reference — ArrowJS',
     description:
       'Comprehensive API reference for every ArrowJS export across @arrow-js/core, framework, ssr, hydrate, and sandbox.',
     canonicalUrl: `${siteUrl}/api`,

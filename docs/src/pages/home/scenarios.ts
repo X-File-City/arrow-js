@@ -63,7 +63,7 @@ export const HvacComparison = component(() => {
 
   return html`
     <div class="space-y-4">
-      <div class="flex items-center gap-2 flex-wrap">
+      <div class="flex items-center gap-1.5 @sm:gap-2 flex-wrap">
         <span class="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mr-0.5">Sort by</span>
         ${keys.map(
           (k) => html`
@@ -72,7 +72,7 @@ export const HvacComparison = component(() => {
                 st.sortBy = k
               }}"
               class="${() =>
-                `px-3 py-1 text-xs font-semibold rounded-full transition-all cursor-pointer outline-none ` +
+                `px-2 @sm:px-3 py-1 text-[11px] @sm:text-xs font-semibold rounded-full transition-all cursor-pointer outline-none ` +
                 (st.sortBy === k
                   ? sortMeta[k].bg + ' ' + sortMeta[k].text + ' shadow-sm'
                   : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700')}"
@@ -83,7 +83,7 @@ export const HvacComparison = component(() => {
         )}
       </div>
 
-      <div class="grid grid-cols-3 gap-3">
+      <div class="grid grid-cols-1 @sm:grid-cols-3 gap-2 @sm:gap-3">
         ${() =>
           sorted(st.sortBy).map((q) => {
             const pos0 = q.vendor === bestVendor(st.sortBy)
@@ -188,7 +188,7 @@ export const ApiDashboard = component(() => {
         </div>
       </div>
 
-      <div class="grid grid-cols-3 gap-3">
+      <div class="grid grid-cols-1 @sm:grid-cols-3 gap-2 @sm:gap-3">
         ${metrics.map((m) => {
           const gradId = `hero-sg-${m.key}`
           const gradFill = `url(#${gradId})`
@@ -305,8 +305,7 @@ export const CoffeeBuilder = component(() => {
   return html`
     <div class="overflow-visible">
       <div
-        class="grid gap-x-3 gap-y-2 items-center overflow-visible"
-        style="grid-template-columns: 3.5rem 1fr 2.5rem auto"
+        class="grid gap-x-2 @sm:gap-x-3 gap-y-2 items-center overflow-visible grid-cols-[2.5rem_1fr_2rem_auto] @sm:grid-cols-[3.5rem_1fr_2.5rem_auto]"
       >
         <span class="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500"></span>
         <span class="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Drink</span>
@@ -460,23 +459,23 @@ export const CocktailScaler = component(() => {
   return html`
     <div class="space-y-4">
       <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2.5">
+        <div class="flex items-center gap-2">
           <img
             src="/margarita-thumb.jpg"
             alt="Classic Margarita"
-            class="w-10 h-10 rounded-lg object-cover"
+            class="w-8 h-8 @sm:w-10 @sm:h-10 rounded-lg object-cover"
           />
           <span class="text-xs font-semibold text-zinc-700 dark:text-zinc-300">${cocktail.name}</span>
         </div>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-1.5 @sm:gap-2">
           <button
             @click="${() => { if (st.servings > 1) st.servings-- }}"
-            class="w-7 h-7 rounded-full border border-zinc-200 dark:border-zinc-700 flex items-center justify-center text-sm font-bold text-zinc-500 dark:text-zinc-400 hover:border-rose-400 hover:text-rose-500 cursor-pointer outline-none transition-colors"
+            class="w-6 h-6 @sm:w-7 @sm:h-7 rounded-full border border-zinc-200 dark:border-zinc-700 flex items-center justify-center text-xs @sm:text-sm font-bold text-zinc-500 dark:text-zinc-400 hover:border-rose-400 hover:text-rose-500 cursor-pointer outline-none transition-colors"
           >\u2212</button>
-          <span class="text-lg font-extrabold text-zinc-900 dark:text-white min-w-[2rem] text-center">${() => st.servings}</span>
+          <span class="text-base @sm:text-lg font-extrabold text-zinc-900 dark:text-white min-w-[1.5rem] @sm:min-w-[2rem] text-center">${() => st.servings}</span>
           <button
             @click="${() => { if (st.servings < 12) st.servings++ }}"
-            class="w-7 h-7 rounded-full border border-zinc-200 dark:border-zinc-700 flex items-center justify-center text-sm font-bold text-zinc-500 dark:text-zinc-400 hover:border-rose-400 hover:text-rose-500 cursor-pointer outline-none transition-colors"
+            class="w-6 h-6 @sm:w-7 @sm:h-7 rounded-full border border-zinc-200 dark:border-zinc-700 flex items-center justify-center text-xs @sm:text-sm font-bold text-zinc-500 dark:text-zinc-400 hover:border-rose-400 hover:text-rose-500 cursor-pointer outline-none transition-colors"
           >+</button>
           <span class="text-[11px] text-zinc-400 dark:text-zinc-500">${() => st.servings === 1 ? 'serving' : 'servings'}</span>
         </div>
@@ -565,7 +564,7 @@ export const DndCreator = component(() => {
   const dItem = 'w-full text-left px-2.5 py-1.5 text-xs cursor-pointer transition-colors first:rounded-t-lg last:rounded-b-lg outline-none text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700/50'
   const dSel = ' font-semibold text-red-600 dark:text-red-400'
   const chev = html`<svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" class="text-zinc-400"><path d="M3 4.5l3 3 3-3" /></svg>`
-  const pm = (on: boolean) => 'w-6 h-6 rounded-md border flex items-center justify-center text-[11px] font-bold cursor-pointer outline-none transition-all ' + (on ? 'border-zinc-300 dark:border-zinc-600 text-zinc-500 hover:border-red-400 hover:text-red-500 active:bg-red-50 dark:active:bg-red-500/10' : 'border-zinc-100 dark:border-zinc-800 text-zinc-200 dark:text-zinc-700 cursor-default')
+  const pm = (on: boolean) => 'w-5 h-5 @sm:w-6 @sm:h-6 rounded-md border flex items-center justify-center text-[11px] font-bold cursor-pointer outline-none transition-all ' + (on ? 'border-zinc-300 dark:border-zinc-600 text-zinc-500 hover:border-red-400 hover:text-red-500 active:bg-red-50 dark:active:bg-red-500/10' : 'border-zinc-100 dark:border-zinc-800 text-zinc-200 dark:text-zinc-700 cursor-default')
 
   return html`
     <div class="space-y-4 overflow-visible">
@@ -614,12 +613,12 @@ export const DndCreator = component(() => {
             <span class="${() => 'text-[10px] font-bold tabular-nums ' + (spent() >= st.budget ? 'text-red-500' : 'text-zinc-400 dark:text-zinc-500')}">${() => spent()}/${st.budget}</span>
           </div>
         </div>
-        <div class="grid grid-cols-3 gap-2.5 text-center">
+        <div class="grid grid-cols-2 @sm:grid-cols-3 gap-2 @sm:gap-2.5 text-center">
           ${abilityNames.map(
             (a) => html`
-              <div class="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/50 py-3 px-2 flex flex-col items-center">
+              <div class="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/50 py-2 @sm:py-3 px-1.5 @sm:px-2 flex flex-col items-center">
                 <div class="text-[10px] font-bold tracking-wider text-zinc-400 dark:text-zinc-500">${a}</div>
-                <div class="text-3xl font-extrabold text-zinc-900 dark:text-white leading-none mt-1">${() => totalScore(a)}</div>
+                <div class="text-2xl @sm:text-3xl font-extrabold text-zinc-900 dark:text-white leading-none mt-1">${() => totalScore(a)}</div>
                 <div class="text-xs font-bold text-red-500 dark:text-red-400 mt-0.5">${() => modifier(totalScore(a))}</div>
                 ${() => {
                   const bonus = raceBonuses[st.race]?.[a]
