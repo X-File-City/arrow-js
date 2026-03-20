@@ -570,9 +570,7 @@ Export a default Arrow template or component result from main.ts. Keep the examp
       "source": {
         "type": "object",
         "description": "Virtual files passed to sandbox({ source }). Must include main.ts or main.js. main.css is optional.",
-        "additionalProperties": {
-          "type": "string"
-        },
+        "additionalProperties": false,
         "properties": {
           "main.ts": {
             "type": "string",
