@@ -8,6 +8,7 @@ export const apiNavGroups: NavGroup[] = [
       { id: 'watch', label: 'watch()' },
       { id: 'html', label: 'html' },
       { id: 'component', label: 'component()' },
+      { id: 'on-cleanup', label: 'onCleanup()' },
       { id: 'pick', label: 'pick() / props()' },
       { id: 'next-tick', label: 'nextTick()' },
     ],

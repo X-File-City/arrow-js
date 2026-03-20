@@ -1,4 +1,4 @@
-import { nextTick, reactive, watch } from '../'
+import { nextTick, onCleanup, reactive, watch } from '../'
 import { describe, it, expect, vi } from 'vitest'
 type Data = {
   value: number | null
@@ -133,5 +133,9 @@ describe('w', () => {
     await nextTick()
     expect(callback).toHaveBeenCalledTimes(3)
     expect(data.list).toEqual([])
+  })
+
+  it('throws if onCleanup is used outside a component cleanup scope', () => {
+    expect(() => onCleanup(() => {})).toThrow(/onCleanup/i)
   })
 })

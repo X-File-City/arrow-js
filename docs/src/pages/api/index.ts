@@ -11,6 +11,8 @@ import {
   HighlightedHtmlApi,
   ComponentApi,
   HighlightedComponentApi,
+  OnCleanupApi,
+  HighlightedOnCleanupApi,
   PickApi,
   HighlightedPickApi,
   NextTickApi,
@@ -44,6 +46,7 @@ export function ApiPage(options: { highlightCode?: boolean } = {}) {
   const WatchApiSection = highlightCode ? HighlightedWatchApi : WatchApi
   const HtmlApiSection = highlightCode ? HighlightedHtmlApi : HtmlApi
   const ComponentApiSection = highlightCode ? HighlightedComponentApi : ComponentApi
+  const OnCleanupApiSection = highlightCode ? HighlightedOnCleanupApi : OnCleanupApi
   const PickApiSection = highlightCode ? HighlightedPickApi : PickApi
   const NextTickApiSection = highlightCode ? HighlightedNextTickApi : NextTickApi
   const RenderApiSection = highlightCode ? HighlightedRenderApi : RenderApi
@@ -76,7 +79,7 @@ export function ApiPage(options: { highlightCode?: boolean } = {}) {
               ${CopyPageMenuIsland({ markdownPath: '/api.md' })}
             </div>
             ${ReactiveApiSection()} ${WatchApiSection()} ${HtmlApiSection()}
-            ${ComponentApiSection()} ${PickApiSection()}
+            ${ComponentApiSection()} ${OnCleanupApiSection()} ${PickApiSection()}
             ${NextTickApiSection()} ${RenderApiSection()} ${BoundaryApiSection()}
             ${ToTemplateApiSection()} ${RenderDocumentApiSection()}
             ${RenderToStringApiSection()} ${SerializePayloadApiSection()}

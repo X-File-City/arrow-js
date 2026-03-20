@@ -102,3 +102,24 @@ export function swapCleanupCollector(collector: Array<() => void> | null) {
 export function registerCleanup(fn: () => void) {
   cleanupCollector?.push(fn)
 }
+
+export function onCleanup(fn: () => void) {
+  const collector = cleanupCollector
+  if (!collector) {
+    throw new Error(
+      'onCleanup() can only be used while rendering a component.'
+    )
+  }
+
+  let active = true
+  const dispose = () => {
+    if (!active) return
+    active = false
+    const index = collector.indexOf(dispose)
+    if (index > -1) collector.splice(index, 1)
+    fn()
+  }
+
+  collector.push(dispose)
+  return dispose
+}

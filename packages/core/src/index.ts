@@ -1,6 +1,7 @@
 import { component, pick } from './component'
 import { html } from './html'
 import { reactive, watch } from './reactive'
+import { nextTick, onCleanup } from './common'
 
 export {
   component,
@@ -13,9 +14,10 @@ export {
   reactive as r,
   watch,
   watch as w,
+  onCleanup,
 }
 
-export { nextTick } from './common'
+export { nextTick }
 
 export type {
   ArrowExpression,

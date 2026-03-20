@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import { component, html, nextTick, pick, reactive } from '..'
+import { component, html, nextTick, onCleanup, pick, reactive, watch } from '..'
 import type { Emit, Props } from '..'
 
 const text = (node: Node) => node.textContent?.replace(/\s+/g, '') ?? ''
@@ -170,6 +170,93 @@ describe('component', () => {
     data.count = 3
     await nextTick()
     expect(runs).toHaveBeenCalledTimes(2)
+  })
+
+  it('cleans up watchers created inside a component when the slot unmounts', async () => {
+    const data = reactive({ count: 1, show: true })
+    const runs = vi.fn()
+    const Child = component((props: Props<{ count: number }>) => {
+      watch(() => props.count, (value) => runs(value))
+      return html`<div>${() => props.count}</div>`
+    })
+    const root = document.createElement('div')
+
+    html`<main>${() => (data.show ? Child(pick(data, 'count')) : '')}</main>`(root)
+    expect(runs).toHaveBeenCalledTimes(1)
+    expect(runs).toHaveBeenLastCalledWith(1)
+
+    data.count = 2
+    await nextTick()
+    expect(runs).toHaveBeenCalledTimes(2)
+    expect(runs).toHaveBeenLastCalledWith(2)
+
+    data.show = false
+    await nextTick()
+
+    data.count = 3
+    await nextTick()
+    expect(runs).toHaveBeenCalledTimes(2)
+  })
+
+  it('runs onCleanup callbacks when a component unmounts', async () => {
+    const data = reactive({ show: true })
+    const cleanup = vi.fn()
+    const Child = component(() => {
+      onCleanup(cleanup)
+      return html`<div>child</div>`
+    })
+    const root = document.createElement('div')
+
+    html`<main>${() => (data.show ? Child() : '')}</main>`(root)
+    expect(cleanup).not.toHaveBeenCalled()
+
+    data.show = false
+    await nextTick()
+
+    expect(cleanup).toHaveBeenCalledTimes(1)
+  })
+
+  it('supports manual early disposal from onCleanup without double-running on unmount', async () => {
+    const data = reactive({ show: true })
+    const cleanup = vi.fn()
+    let dispose = () => {}
+    const Child = component(() => {
+      dispose = onCleanup(cleanup)
+      return html`<div>child</div>`
+    })
+    const root = document.createElement('div')
+
+    html`<main>${() => (data.show ? Child() : '')}</main>`(root)
+    dispose()
+    expect(cleanup).toHaveBeenCalledTimes(1)
+
+    data.show = false
+    await nextTick()
+
+    expect(cleanup).toHaveBeenCalledTimes(1)
+  })
+
+  it('supports onCleanup for manual event teardown on unmount', async () => {
+    const data = reactive({ show: true })
+    const handler = vi.fn()
+    const eventName = 'arrow-cleanup-test'
+    const Child = component(() => {
+      window.addEventListener(eventName, handler)
+      onCleanup(() => window.removeEventListener(eventName, handler))
+      return html`<div>child</div>`
+    })
+    const root = document.createElement('div')
+
+    html`<main>${() => (data.show ? Child() : '')}</main>`(root)
+
+    window.dispatchEvent(new Event(eventName))
+    expect(handler).toHaveBeenCalledTimes(1)
+
+    data.show = false
+    await nextTick()
+
+    window.dispatchEvent(new Event(eventName))
+    expect(handler).toHaveBeenCalledTimes(1)
   })
 
   it('preserves keyed component state across list reorders', async () => {

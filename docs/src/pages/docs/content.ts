@@ -184,13 +184,17 @@ export function Components() {
         </ul>
 
         <div class="code-block">
-          <pre><code class="language-ts">import { component, html, reactive } from '@arrow-js/core'
+          <pre><code class="language-ts">import { component, html, onCleanup, reactive } from '@arrow-js/core'
 import type { Props } from '@arrow-js/core'
 
 const parentState = reactive({ count: 1 })
 
 const Counter = component((props: Props&lt;{ count: number }&gt;) =&gt; {
   const local = reactive({ clicks: 0 })
+  const onResize = () =&gt; console.log(window.innerWidth)
+
+  window.addEventListener('resize', onResize)
+  onCleanup(() =&gt; window.removeEventListener('resize', onResize))
 
   return html\`&lt;button @click="\${() =&gt; local.clicks++}"&gt;
     Root count \${() =&gt; props.count} | Local clicks \${() =&gt; local.clicks}
@@ -238,6 +242,12 @@ html\`&lt;p&gt;
             once at component creation time if you expect updates.
           </p>
         </div>
+
+        <p>
+          Use <code>onCleanup()</code> inside a component when you set up
+          manual listeners, timers, or sockets that need teardown when the
+          component slot unmounts.
+        </p>
 
         <h3 class="text-lg font-semibold text-zinc-900 dark:text-white pt-4">
           Async components
@@ -389,6 +399,10 @@ export function WatchingData() {
           <li>
             Arrow also drops dependencies that are no longer touched on later
             runs.
+          </li>
+          <li>
+            Watchers created inside a component are stopped automatically when
+            that component unmounts.
           </li>
         </ul>
 

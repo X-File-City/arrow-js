@@ -318,11 +318,10 @@ function createComputed<T>(effect: () => T): Computed<T> {
   }
   const state = reactive(source) as Reactive<{ value: T }>
   computedIds[getId(state as object)] = true
-  const [, stop] = watch(
+  watch(
     effect,
     (value) => (state.value = value as Reactive<{ value: T }>['value'])
   )
-  registerCleanup(stop)
   return state as Computed<T>
 }
 
@@ -616,6 +615,7 @@ export function watch<
     if (isPointer) onExpressionUpdate(effect as number)
     rerun = null
   }
+  if (!isPointer) registerCleanup(stop)
   if (isPointer) onExpressionUpdate(effect as number, runEffect)
   return [runEffect(), stop]
 }

@@ -126,6 +126,8 @@ declare module '@arrow-js/core' {
   >(effect: F, afterEffect: A): [returnValue: ReturnType<A>, stop: () => void]
   export { watch as w }
 
+  export function onCleanup(fn: () => void): () => void
+
   export function nextTick(fn?: CallableFunction): Promise<unknown>
 
   export function component(factory: () => ArrowTemplate): Component

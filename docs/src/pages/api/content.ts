@@ -162,6 +162,10 @@ declare function watch&lt;F extends () =&gt; unknown, A extends (arg: ReturnType
           A tuple <code>[returnValue, stop]</code>. Call <code>stop()</code>
           to unsubscribe from all tracked dependencies.
         </p>
+        <p>
+          When a watcher is created inside <code>component()</code>, Arrow
+          also stops it automatically when that component unmounts.
+        </p>
 
         <h3
           class="text-lg font-semibold text-zinc-900 dark:text-white pt-4"
@@ -194,6 +198,78 @@ stop()</code></pre>
             <li>Dependencies are auto-discovered from reactive reads.</li>
             <li>Dependencies no longer read on subsequent runs are dropped.</li>
           </ul>
+        </div>
+      </div>
+    </section>
+  `
+}
+
+export function OnCleanupApi() {
+  return html`
+    <section id="on-cleanup" class="mb-16">
+      <h2
+        class="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4"
+      >
+        onCleanup()
+      </h2>
+      <div class="space-y-4 text-zinc-600 dark:text-zinc-400 leading-relaxed">
+        <p>
+          Registers teardown work for the current component instance.
+        </p>
+
+        <h3
+          class="text-lg font-semibold text-zinc-900 dark:text-white pt-4"
+        >
+          Signature
+        </h3>
+        <div class="code-block">
+          <pre><code class="language-ts">declare function onCleanup(fn: () =&gt; void): () =&gt; void</code></pre>
+        </div>
+
+        <h3
+          class="text-lg font-semibold text-zinc-900 dark:text-white pt-4"
+        >
+          Behavior
+        </h3>
+        <ul class="list-disc pl-6 space-y-2">
+          <li>
+            Call it inside <code>component()</code> while setting up local
+            side effects.
+          </li>
+          <li>
+            Arrow runs the cleanup automatically when that component slot
+            unmounts.
+          </li>
+          <li>
+            It also returns a disposer so you can stop the side effect early.
+          </li>
+        </ul>
+
+        <h3
+          class="text-lg font-semibold text-zinc-900 dark:text-white pt-4"
+        >
+          Example
+        </h3>
+        <div class="code-block">
+          <pre><code class="language-ts">import { component, html, onCleanup } from '@arrow-js/core'
+
+const ResizeProbe = component(() =&gt; {
+  const onResize = () =&gt; console.log(window.innerWidth)
+
+  window.addEventListener('resize', onResize)
+  onCleanup(() =&gt; window.removeEventListener('resize', onResize))
+
+  return html\`&lt;div&gt;Watching resize…&lt;/div&gt;\`
+})</code></pre>
+        </div>
+
+        <div class="callout callout-tip">
+          <div class="callout-label">Tip</div>
+          <p>
+            Use <code>onCleanup()</code> for manual subscriptions like DOM
+            listeners, timers, sockets, or anything else Arrow did not create
+            for you.
+          </p>
         </div>
       </div>
     </section>
@@ -396,16 +472,21 @@ declare function component&lt;T extends ReactiveTarget, TValue, TSnapshot = TVal
           Usage
         </h3>
         <div class="code-block">
-          <pre><code class="language-ts">import { component, html, reactive } from '@arrow-js/core'
+          <pre><code class="language-ts">import { component, html, onCleanup, reactive } from '@arrow-js/core'
 import type { Props } from '@arrow-js/core'
 
 // Sync component with props
 const Counter = component((props: Props&lt;{ count: number }&gt;) =&gt; {
   const local = reactive({ clicks: 0 })
+  const onResize = () =&gt; console.log('resize')
+
+  window.addEventListener('resize', onResize)
+  onCleanup(() =&gt; window.removeEventListener('resize', onResize))
+
   return html\`&lt;button @click="\${() =&gt; local.clicks++}"&gt;
     Root \${() =&gt; props.count} | Local \${() =&gt; local.clicks}
   &lt;/button&gt;\`
-})
+}) 
 
 // Async component
 const UserName = component(async ({ id }: { id: string }) =&gt; {
@@ -1248,6 +1329,10 @@ export const HighlightedHtmlApi = highlightedSection(
 export const HighlightedComponentApi = highlightedSection(
   ComponentApi,
   'api-component'
+)
+export const HighlightedOnCleanupApi = highlightedSection(
+  OnCleanupApi,
+  'api-on-cleanup'
 )
 export const HighlightedPickApi = highlightedSection(
   PickApi,
