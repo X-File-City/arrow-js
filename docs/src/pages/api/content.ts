@@ -1107,8 +1107,13 @@ interface SandboxEvents {
   output?: (payload: unknown) =&gt; void;
 }
 
-declare function sandbox(
-  props: SandboxProps,
+declare function sandbox&lt;T extends {
+  source: object;
+  shadowDOM?: boolean;
+  onError?: (error: Error | string) =&gt; void;
+  debug?: boolean;
+}&gt;(
+  props: T,
   events?: SandboxEvents
 ): ArrowTemplate`)}
 

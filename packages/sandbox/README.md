@@ -97,8 +97,13 @@ export interface SandboxEvents {
   output?: (payload: unknown) => void
 }
 
-export function sandbox(
-  props: SandboxProps,
+export function sandbox<T extends {
+  source: object
+  shadowDOM?: boolean
+  onError?: (error: Error | string) => void
+  debug?: boolean
+}>(
+  props: T,
   events?: SandboxEvents
 ): ArrowTemplate
 ```
