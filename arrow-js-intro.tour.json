@@ -1,0 +1,329 @@
+{
+  "id": "arrow-js-intro",
+  "title": "Arrow JS — A Tour of the Codebase",
+  "description": "A guided walkthrough of the Arrow JS monorepo: a tiny, blazing-fast, type-safe reactive UI runtime built for coding agents. Covers the core reactive engine, framework layer, SSR/hydration, sandbox, tooling, and docs.",
+  "version": "1.0.0",
+  "steps": [
+    {
+      "id": "welcome",
+      "title": "Welcome to Arrow JS",
+      "description": "Arrow JS is a monorepo containing 11 packages that form a layered UI runtime. At ~4.7KB (brotli), the core provides reactive state, tagged template literals for DOM rendering, and a component model — all designed for coding agents. Let's explore how it's organized.",
+      "focusDirectory": "",
+      "colorMode": "fileTypes"
+    },
+    {
+      "id": "packages-overview",
+      "title": "The Packages Directory",
+      "description": "All runtime and tooling packages live here. The architecture is layered: core → framework → SSR and hydration, with standalone packages for the sandbox, compiler, Vite plugin, syntax highlighting, and scaffolding CLI.",
+      "focusDirectory": "packages",
+      "colorMode": "fileTypes",
+      "highlightLayers": [
+        {
+          "id": "runtime-packages",
+          "name": "Runtime Packages",
+          "color": "#3b82f6",
+          "items": [
+            { "path": "packages/core", "type": "directory" },
+            { "path": "packages/framework", "type": "directory" },
+            { "path": "packages/ssr", "type": "directory" },
+            { "path": "packages/hydrate", "type": "directory" }
+          ],
+          "opacity": 0.7,
+          "renderStrategy": "border"
+        },
+        {
+          "id": "tooling-packages",
+          "name": "Tooling & Extensions",
+          "color": "#f59e0b",
+          "items": [
+            { "path": "packages/sandbox", "type": "directory" },
+            { "path": "packages/compiler", "type": "directory" },
+            { "path": "packages/vite-plugin-arrow", "type": "directory" },
+            { "path": "packages/highlight", "type": "directory" },
+            { "path": "packages/skill", "type": "directory" },
+            { "path": "packages/create-arrow-js", "type": "directory" }
+          ],
+          "opacity": 0.7,
+          "renderStrategy": "border"
+        }
+      ]
+    },
+    {
+      "id": "core-runtime",
+      "title": "Core Runtime (~4.7KB)",
+      "description": "The heart of Arrow JS. The core package exports a small set of primitives — reactive state, tagged templates, components, watchers, property picking, and cleanup hooks — that power every layer above. The highlighted engine files handle template processing, DOM diffing, observable state with automatic dependency tracking, and the component factory.",
+      "focusDirectory": "packages/core/src",
+      "colorMode": "fileTypes",
+      "highlightLayers": [
+        {
+          "id": "core-entry",
+          "name": "Public API",
+          "color": "#10b981",
+          "items": [
+            { "path": "packages/core/src/index.ts", "type": "file" }
+          ],
+          "opacity": 0.8,
+          "renderStrategy": "border"
+        },
+        {
+          "id": "core-engine",
+          "name": "Core Engine",
+          "color": "#3b82f6",
+          "items": [
+            { "path": "packages/core/src/html.ts", "type": "file" },
+            { "path": "packages/core/src/reactive.ts", "type": "file" },
+            { "path": "packages/core/src/component.ts", "type": "file" }
+          ],
+          "opacity": 0.8,
+          "renderStrategy": "border"
+        },
+        {
+          "id": "core-support",
+          "name": "Supporting Modules",
+          "color": "#8b5cf6",
+          "items": [
+            { "path": "packages/core/src/expressions.ts", "type": "file" },
+            { "path": "packages/core/src/dom.ts", "type": "file" },
+            { "path": "packages/core/src/pool.ts", "type": "file" },
+            { "path": "packages/core/src/common.ts", "type": "file" }
+          ],
+          "opacity": 0.7,
+          "renderStrategy": "border"
+        }
+      ],
+      "interactiveActions": [
+        {
+          "type": "click-file",
+          "description": "Open the public API index to see all exports",
+          "target": "packages/core/src/index.ts"
+        }
+      ]
+    },
+    {
+      "id": "reactive-system",
+      "title": "The Reactive Engine",
+      "description": "The observable state system at the core of Arrow. It creates proxy-wrapped objects that automatically track which expressions read which properties, then surgically re-runs only the affected expressions when state changes. This dependency tracking is what makes Arrow fast — no virtual DOM diffing needed.",
+      "focusDirectory": "packages/core/src",
+      "colorMode": "fileTypes",
+      "highlightLayers": [
+        {
+          "id": "reactive-files",
+          "name": "Reactive System",
+          "color": "#ef4444",
+          "items": [
+            { "path": "packages/core/src/reactive.ts", "type": "file" },
+            { "path": "packages/core/src/expressions.ts", "type": "file" }
+          ],
+          "opacity": 0.8,
+          "renderStrategy": "border"
+        }
+      ],
+      "interactiveActions": [
+        {
+          "type": "click-file",
+          "description": "Explore the reactive state implementation",
+          "target": "packages/core/src/reactive.ts"
+        }
+      ]
+    },
+    {
+      "id": "template-dom",
+      "title": "Template Literals & DOM",
+      "description": "The largest module in core — it processes tagged template literals, parses them into DOM nodes, and patches the real DOM efficiently. Expressions embedded in templates are tracked reactively so the DOM updates automatically when state changes. No virtual DOM, no reconciler — just direct, surgical mutations.",
+      "focusDirectory": "packages/core/src",
+      "colorMode": "fileTypes",
+      "highlightLayers": [
+        {
+          "id": "dom-files",
+          "name": "Template & DOM",
+          "color": "#06b6d4",
+          "items": [
+            { "path": "packages/core/src/html.ts", "type": "file" },
+            { "path": "packages/core/src/dom.ts", "type": "file" }
+          ],
+          "opacity": 0.8,
+          "renderStrategy": "border"
+        }
+      ],
+      "interactiveActions": [
+        {
+          "type": "click-file",
+          "description": "Dive into the template literal processor",
+          "target": "packages/core/src/html.ts"
+        }
+      ]
+    },
+    {
+      "id": "framework-layer",
+      "title": "Framework Layer",
+      "description": "The framework package builds on core to add async components, render boundaries, context injection, and document-level rendering. It enables SSR and hydration by providing boundaries for error recovery and a render orchestrator for async component trees.",
+      "focusDirectory": "packages/framework/src",
+      "colorMode": "fileTypes",
+      "highlightLayers": [
+        {
+          "id": "framework-core",
+          "name": "Framework Core",
+          "color": "#f97316",
+          "items": [
+            { "path": "packages/framework/src/index.ts", "type": "file" },
+            { "path": "packages/framework/src/async.ts", "type": "file" },
+            { "path": "packages/framework/src/render.ts", "type": "file" },
+            { "path": "packages/framework/src/boundary.ts", "type": "file" },
+            { "path": "packages/framework/src/context.ts", "type": "file" }
+          ],
+          "opacity": 0.8,
+          "renderStrategy": "border"
+        }
+      ]
+    },
+    {
+      "id": "ssr-hydration",
+      "title": "SSR & Hydration",
+      "description": "Two small packages complete the server-rendering story. The SSR package converts components to HTML and serializes payloads on the server, while the hydration package adopts that markup and restores interactivity on the client. Together they enable full-stack Arrow apps with zero JavaScript on first paint.",
+      "focusDirectory": "packages",
+      "colorMode": "fileTypes",
+      "highlightLayers": [
+        {
+          "id": "ssr-package",
+          "name": "Server (SSR)",
+          "color": "#14b8a6",
+          "items": [
+            { "path": "packages/ssr", "type": "directory" }
+          ],
+          "opacity": 0.8,
+          "renderStrategy": "border"
+        },
+        {
+          "id": "hydrate-package",
+          "name": "Client (Hydrate)",
+          "color": "#a855f7",
+          "items": [
+            { "path": "packages/hydrate", "type": "directory" }
+          ],
+          "opacity": 0.8,
+          "renderStrategy": "border"
+        }
+      ]
+    },
+    {
+      "id": "sandbox",
+      "title": "WASM Sandbox Runtime",
+      "description": "The sandbox package runs Arrow code in a WASM environment, fully isolated from the host window. It has a host side that manages instances and rendering, a VM side with the sandboxed runtime, and a shared protocol layer for communication between them. This powers safe code execution in agent-facing tools.",
+      "focusDirectory": "packages/sandbox/src",
+      "colorMode": "fileTypes",
+      "highlightLayers": [
+        {
+          "id": "sandbox-host",
+          "name": "Host Bridge",
+          "color": "#ec4899",
+          "items": [
+            { "path": "packages/sandbox/src/host", "type": "directory" }
+          ],
+          "opacity": 0.7,
+          "renderStrategy": "border"
+        },
+        {
+          "id": "sandbox-vm",
+          "name": "VM Runtime",
+          "color": "#6366f1",
+          "items": [
+            { "path": "packages/sandbox/src/vm", "type": "directory" }
+          ],
+          "opacity": 0.7,
+          "renderStrategy": "border"
+        },
+        {
+          "id": "sandbox-shared",
+          "name": "Shared Protocol",
+          "color": "#f59e0b",
+          "items": [
+            { "path": "packages/sandbox/src/shared", "type": "directory" }
+          ],
+          "opacity": 0.7,
+          "renderStrategy": "border"
+        }
+      ]
+    },
+    {
+      "id": "docs-site",
+      "title": "Documentation Site",
+      "description": "The docs site is built with Arrow itself — a real-world showcase of SSR + hydration. It has server and client entry points, page-based routing, reusable components, and uses Tailwind CSS 4. It's both documentation and a living example of the framework's capabilities.",
+      "focusDirectory": "docs/src",
+      "colorMode": "fileTypes",
+      "highlightLayers": [
+        {
+          "id": "docs-entry",
+          "name": "Entry Points",
+          "color": "#22c55e",
+          "items": [
+            { "path": "docs/src/entry-server.ts", "type": "file" },
+            { "path": "docs/src/entry-client.ts", "type": "file" }
+          ],
+          "opacity": 0.8,
+          "renderStrategy": "border"
+        },
+        {
+          "id": "docs-pages",
+          "name": "Pages & Components",
+          "color": "#3b82f6",
+          "items": [
+            { "path": "docs/src/pages", "type": "directory" },
+            { "path": "docs/src/components", "type": "directory" }
+          ],
+          "opacity": 0.7,
+          "renderStrategy": "border"
+        }
+      ]
+    },
+    {
+      "id": "testing-and-build",
+      "title": "Testing & Build Infrastructure",
+      "description": "Arrow has a thorough test setup: unit tests colocated alongside source, end-to-end tests against the docs site, and a framework benchmark suite. The core build pipeline minifies with strict size limits and CI runs typecheck, tests, and build on every push.",
+      "focusDirectory": "",
+      "colorMode": "fileTypes",
+      "highlightLayers": [
+        {
+          "id": "test-infra",
+          "name": "Test Infrastructure",
+          "color": "#ef4444",
+          "items": [
+            { "path": "tests", "type": "directory" },
+            { "path": "vitest.config.ts", "type": "file" },
+            { "path": "playwright.config.ts", "type": "file" }
+          ],
+          "opacity": 0.7,
+          "renderStrategy": "border"
+        },
+        {
+          "id": "build-infra",
+          "name": "Build & CI",
+          "color": "#f59e0b",
+          "items": [
+            { "path": "packages/core/build", "type": "directory" },
+            { "path": "packages/core/rollup.config.ts", "type": "file" },
+            { "path": ".github/workflows", "type": "directory" }
+          ],
+          "opacity": 0.7,
+          "renderStrategy": "border"
+        },
+        {
+          "id": "bench-infra",
+          "name": "Benchmarks",
+          "color": "#8b5cf6",
+          "items": [
+            { "path": "bench", "type": "directory" }
+          ],
+          "opacity": 0.7,
+          "renderStrategy": "border"
+        }
+      ]
+    },
+    {
+      "id": "full-picture",
+      "title": "The Full Picture",
+      "description": "Arrow JS is a tightly layered system: core (reactive + templates + components) → framework (async + boundaries + context) → ssr/hydrate (full-stack rendering). The sandbox adds secure execution, the docs site proves the stack, and the tooling packages (Vite plugin, CLI, VS Code extension) round out the developer experience. Explore any area that interests you!",
+      "focusDirectory": "",
+      "colorMode": "fileTypes"
+    }
+  ]
+}
