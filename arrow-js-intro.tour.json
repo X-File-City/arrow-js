@@ -7,7 +7,7 @@
     {
       "id": "welcome",
       "title": "Welcome to Arrow JS",
-      "description": "Arrow JS is a monorepo containing 11 packages that form a layered UI runtime. At ~4.7KB (brotli), the core provides reactive state, tagged template literals for DOM rendering, and a component model — all designed for coding agents. Let's explore how it's organized.",
+      "description": "Arrow JS is a monorepo containing 11 packages that form a layered UI runtime. The core provides reactive state, tagged template literals for DOM rendering, and a component model — all designed for coding agents. Let's explore how it's organized.",
       "focusDirectory": "",
       "colorMode": "fileTypes"
     },
